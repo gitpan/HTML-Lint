@@ -1,16 +1,30 @@
+# $Id: Lint.pm,v 1.3 2002/02/23 08:38:52 comdog Exp $
 package HTML::Lint;
 
 =head1 NAME
 
-HTML::Lint - Perl extension for checking validity of HTML
+HTML::Lint - check for HTML errors in a string or file
 
 =head1 SYNOPSIS
 
+	my $lint = HTML::Lint->new;
+	
+	$lint->parse( $data );
+	$lint->parse_file( $filename );
+	
+	my $error_count = $lint->errors;
+	
+	foreach my $error ( $lint->errors )
+		{
+		print $error->as_string, "\n";
+		}
+	
 =cut
 
 use 5.6.0;
 use strict;
 use warnings;
+
 use HTML::Parser 3.20;
 use HTML::Tagset 3.03;
 use HTML::Lint::Error;
@@ -20,11 +34,11 @@ our @ISA = qw( HTML::Parser );
 
 =head1 VERSION
 
-Version 0.91
+Version 0.92
 
 =cut
 
-our $VERSION = '0.91';
+our $VERSION = '0.92';
 
 =head1 EXPORTS
 
@@ -36,9 +50,12 @@ C<HTML::Lint> is based on the L<HTML::Parser> module.  Any method call that work
 C<HTML::Parser> will work in <HTML::Lint>.  However, you'll probably only want to use
 the C<parse()> or C<parse_file()> methods.
 
-=head2 new()
+=over 4
 
-Constructor for linting.  Takes no arguments.
+=item new()
+
+Create an HTML::Lint object, which inherits from HTML::Parser.  The C<new> 
+method takes no arguments.
 
 =cut
 
@@ -61,13 +78,29 @@ sub new {
     return $self;
 }
 
+=item errors()
 
-sub errors { my $self = shift; return @{$self->{_errors}}; }
+In list context, C<errors> returns all of the errors found in 
+the parsed text.  In scalar context, it returns the number of
+errors found.
+
+=cut
+
+sub errors {
+    my $self = shift;
+
+    if ( wantarray ) {
+	return @{$self->{_errors}};
+    } else {
+	return scalar @{$self->{_errors}};
+    }
+}
 
 sub gripe {
     my $self = shift;
 
-    my $err = new HTML::Lint::Error( $self->file, $self->line, $self->column, @_ );
+    my $err = new HTML::Lint::Error( 
+    	$self->file, $self->line, $self->column, @_ );
 
     push( @{$self->{_errors}}, $err );
 }
@@ -147,8 +180,9 @@ sub _end {
 	    my @leftovers = $self->_element_pop_back_to($tag);
 	    for ( @leftovers ) {
 		my ($tag,$line,$col) = @$_;
-		$self->gripe( 'elem-unclosed', tag => $tag, where => HTML::Lint::Error::where($line,$col) )
-		    unless $HTML::Tagset::optionalEndTag{$tag};
+		$self->gripe( 'elem-unclosed', tag => $tag, 
+			where => HTML::Lint::Error::where($line,$col) )
+		    	unless $HTML::Tagset::optionalEndTag{$tag};
 	    } # for
 	} else {
 	    $self->gripe( 'elem-unopened', tag => $tag );
@@ -242,6 +276,11 @@ sub _start_input {
     }
 }
 
+=back
+
+=head1 SEE ALSO
+
+L<HTML::Lint::Errors>, L<HTML::Parser>
 
 =head1 TODO
 

@@ -1,3 +1,4 @@
+# $Id: Error.pm,v 1.3 2002/02/26 17:29:55 petdance Exp $
 package HTML::Lint::Error;
 
 use 5.6.0;
@@ -51,8 +52,21 @@ sub new {
     return $self;
 }
 
+sub _prep_errors {
+    while (<DATA>) {
+	chomp;
+	next if /^\s*#/;
+	next if /^$/;
+
+	my ($name,$text) = split( /\s+/, $_, 2 );
+	$_errors{$name} = $text;
+    } # while
+}
+
 sub _expand_error {
     my $errcode = shift;
+    
+    _prep_errors unless %_errors;
     
     my $str = $_errors{$errcode} || "Unknown code: $errcode";
 
@@ -86,11 +100,11 @@ sub as_string {
     return sprintf( "%s %s %s", $self->file, $self->where, $self->errtext );
 }
 
-sub file { my $self = shift; return $self->{_file} }
-sub line { my $self = shift; return $self->{_line} }
-sub column { my $self = shift; return $self->{_column} }
-sub errcode { my $self = shift; return $self->{_errcode} }
-sub errtext { my $self = shift; return $self->{_errtext} }
+sub file 	{ my $self = shift; return $self->{_file} 	|| '' }
+sub line 	{ my $self = shift; return $self->{_line} 	|| '' }
+sub column 	{ my $self = shift; return $self->{_column} 	|| '' }
+sub errcode 	{ my $self = shift; return $self->{_errcode} 	|| '' }
+sub errtext 	{ my $self = shift; return $self->{_errtext} 	|| '' }
 
 
 =head1 TODO
@@ -110,16 +124,6 @@ Andy Lester, E<lt>andy@petdance.comE<gt>
 
 =cut
 
-INIT {
-    while (<DATA>) {
-	chomp;
-	next if /^\s*#/;
-	next if /^$/;
-
-	my ($name,$text) = split( /\s+/, $_, 2 );
-	$_errors{$name} = $text;
-    } # while
-}
 
 1; # happy
 

@@ -1,3 +1,4 @@
+# $Id: README,v 1.2 2002/02/23 08:38:52 comdog Exp $
 HTML::Lint Version 0.90
 
 HTML::Lint is broken down into a number of perl modules:

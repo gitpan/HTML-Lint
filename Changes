@@ -1,4 +1,12 @@
+# $Id: Changes,v 1.3 2002/02/26 17:29:55 petdance Exp $
 Revision history for Perl extension HTML::Lint.
+
+0.92	February 26, 2001
+	* Removed the INIT block in HTML::Error in preparation for
+	  Apache::Lint, and so brian's weblint++ can use it.
+	* errors() method respects wantarray (brian d foy)
+	* file(), line(), column(), errcode() and errtext() all return
+	blank instead of undef.
 
 0.91	January 8, 2002
 	* Fixed: Content description tags (<CITE>, <EM>, etc) were

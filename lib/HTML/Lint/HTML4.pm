@@ -1,3 +1,4 @@
+# $Id: HTML4.pm,v 1.2 2002/02/23 08:38:52 comdog Exp $
 package HTML::Lint::HTML4;
 
 use 5.6.0;

@@ -1,3 +1,4 @@
+# $Id: Makefile.PL,v 1.2 2002/02/23 08:38:52 comdog Exp $
 use strict;
 use ExtUtils::MakeMaker;
 use File::Find;
