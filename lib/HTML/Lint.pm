@@ -4,6 +4,17 @@ package HTML::Lint;
 
 HTML::Lint - check for HTML errors in a string or file
 
+=head1 VERSION
+
+Version 1.28
+
+    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.63 2004/01/27 23:15:34 petdance Exp $
+
+=cut
+
+use vars '$VERSION';
+$VERSION = '1.28';
+
 =head1 SYNOPSIS
 
     my $lint = HTML::Lint->new;
@@ -46,19 +57,9 @@ use HTML::Lint::Error;
 use HTML::Lint::HTML4 qw( %isKnownAttribute %isRequired %isNonrepeatable %isObsolete );
 use HTML::Entities qw( %char2entity );
 
-use vars qw( @ISA $VERSION );
+use vars qw( @ISA );
 
 @ISA = qw( HTML::Parser );
-
-=head1 VERSION
-
-Version 1.26
-
-    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.62 2003/12/23 06:22:46 petdance Exp $
-
-=cut
-
-$VERSION = '1.26';
 
 =head1 EXPORTS
 
@@ -248,7 +249,7 @@ sub column {
 
 =pod
 
-Here's all the internal functions that nobody needs to know about
+Here are all the internal functions that nobody needs to know about
 
 =cut
 
@@ -417,7 +418,7 @@ Please feel free to email me at andy@petdance.com.  I'm glad to help as
 best I can, and I'm always interested in bugs, suggestions and patches.
 
 Please report any bugs or feature requests to
-E<lt>bug-html-lint@rt.cpan.orgE<gt>, or through the web interface at
+C<< <bug-html-lint@rt.cpan.org> >>, or through the web interface at
 L<http://rt.cpan.org>.  I will be notified, and then you'll automatically
 be notified of progress on your bug as I make changes.
 

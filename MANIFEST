@@ -1,4 +1,4 @@
-# $Id: MANIFEST,v 1.17 2003/12/23 06:22:46 petdance Exp $
+# $Id: MANIFEST,v 1.18 2004/01/27 22:47:50 petdance Exp $
 Changes
 MANIFEST
 Makefile.PL
@@ -20,7 +20,6 @@ t/20.error-types-skip.t
 t/20.error-types.t
 t/30.test-builder.t
 t/40.where.t
-t/99.pod.t
 t/attr-repeated.t
 t/attr-unknown.t
 t/doc-tag-required.t
@@ -31,6 +30,8 @@ t/elem-nonrepeatable.t
 t/elem-unclosed.t
 t/elem-unknown.t
 t/elem-unopened.t
+t/pod.t
+t/pod-coverage.t
 t/random-nobr.t
 t/text-use-entity.t
 weblint-original/Announce
@@ -43,4 +44,4 @@ weblint-original/test.pl
 weblint-original/weblint
 weblint-original/weblint.1
 weblint-original/weblintrc
-META.yml                                Module meta-data (added by MakeMaker)
+META.yml
