@@ -1,10 +1,11 @@
-# $Id: 01.coverage.t,v 1.3 2002/08/08 15:39:20 petdance Exp $
+# $Id: 01.coverage.t,v 1.4 2003/06/10 15:59:42 petdance Exp $
 
 use Test::More 'no_plan';
 
 use_ok( 'HTML::Lint::Error' );
 
-my @errors = keys %HTML::Lint::Error::errors;
+my @errors = do { no warnings; keys %HTML::Lint::Error::errors };
+
 isnt( scalar @errors, 0, 'There are at least some errors to be found.' );
 
 for my $error ( @errors ) {

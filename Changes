@@ -1,5 +1,13 @@
-# $Id: Changes,v 1.37 2002/10/10 05:33:27 petdance Exp $
+# $Id: Changes,v 1.41 2003/06/11 14:05:07 petdance Exp $
 Revision history for Perl extension HTML::Lint.
+
+1.22	JUNE 11, 2003
+	[ENHANCEMENTS]
+	* Added some docs explaining html_ok()'s optional lint object.
+	* Allowed the NAME attribute in the <IMG> tag.
+
+	[FIXES]
+	* Fixed the version check in t/99.pod.t
 
 1.21	October 9, 2002
 	[ENHANCEMENTS]

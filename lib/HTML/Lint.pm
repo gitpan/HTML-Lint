@@ -7,6 +7,7 @@ HTML::Lint - check for HTML errors in a string or file
 =head1 SYNOPSIS
 
     my $lint = HTML::Lint->new;
+    $lint->only_types( HTML::Lint::STRUCTURE );
 
     $lint->parse( $data );
     $lint->parse_file( $filename );
@@ -27,8 +28,9 @@ linting from the command line:
     http://www.cnn.com/ (396:241) </nobr> with no opening <nobr>
     http://www.cnn.com/ (842:7) target attribute in <a> is repeated
 
-And finally, you can also get Apache::Lint that passes any mod_perl-generated 
-code through HTML::Lint and get it dumped into your Apache F<error_log>.
+And finally, you can also get L<Apache::HTML::Lint> that passes any
+mod_perl-generated code through HTML::Lint and get it dumped into your
+Apache F<error_log>.
 
     [Mon Jun  3 14:03:31 2002] [warn] /foo.pl (1:45) </p> with no opening <p>
     [Mon Jun  3 14:03:31 2002] [warn] /foo.pl (1:49) Unknown element <gronk>
@@ -37,7 +39,6 @@ code through HTML::Lint and get it dumped into your Apache F<error_log>.
 =cut
 
 use strict;
-eval 'use warnings' if $] >= 5.006;
 
 use HTML::Parser 3.20;
 use HTML::Tagset 3.03;
@@ -51,13 +52,13 @@ use vars qw( @ISA $VERSION );
 
 =head1 VERSION
 
-Version 1.21
+Version 1.22
 
-    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.46 2002/10/10 05:33:27 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.52 2003/06/11 14:04:11 petdance Exp $
 
 =cut
 
-$VERSION = '1.21';
+$VERSION = '1.22';
 
 =head1 EXPORTS
 
@@ -105,7 +106,11 @@ Specifies to only want errors of a certain type.
 
     $lint->only_types( HTML::Lint::Error::STRUCTURE );
 
-Calling this without parameters makes the object return all possible errors.
+Calling this without parameters makes the object return all possible
+errors.
+
+The error types are C<STRUCTURE>, C<HELPER> and C<FLUFF>.
+See L<HTML::Lint::Error> for details on these types.
 
 =cut
 
@@ -422,15 +427,19 @@ sub _check_test_more {
     }
 }
 
-=head1 SEE ALSO
+=head1 BUGS, WISHES AND CORRESPONDENCE
 
-L<HTML::Lint::Error>, L<HTML::Parser>
+Please feel free to email me at andy@petdance.com.  I'm glad to help as
+best I can, and I'm always interested in bugs, suggestions and patches.
+
+Please report any bugs or feature requests to
+E<lt>bug-html-lint@rt.cpan.orgE<gt>, or through the web interface at
+L<http://rt.cpan.org>.  I will be notified, and then you'll automatically
+be notified of progress on your bug as I make changes.
 
 =head1 TODO
 
 =over 4
-
-=item * Add some end-of-document tests.
 
 =item * Check for attributes that require values
 
@@ -461,7 +470,10 @@ that's a problem.  (Plus, that crashes IE OSX)
 
 =head1 LICENSE
 
-This code may be distributed under the same terms as Perl itself.
+Copyright 2003 Andy Lester, All Rights Reserved.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
 
 Please note that these modules are not products of or supported by the
 employers of the various contributors to the code.

@@ -1,12 +1,11 @@
 package Test::HTML::Lint;
 
 use strict;
-eval 'use warnings' if $] >= 5.006;
 
 use Test::Builder;
 use Exporter;
 
-use HTML::Lint 1.21;
+use HTML::Lint 1.22;
 
 use vars qw( @ISA $VERSION @EXPORT );
 
@@ -14,13 +13,13 @@ use vars qw( @ISA $VERSION @EXPORT );
 
 =head1 VERSION
 
-Version 1.21
+Version 1.22
 
-    $Header: /cvsroot/html-lint/html-lint/lib/Test/HTML/Lint.pm,v 1.16 2002/10/10 05:33:27 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/Test/HTML/Lint.pm,v 1.19 2003/06/11 14:04:13 petdance Exp $
 
 =cut
 
-$VERSION = '1.21';
+$VERSION = '1.22';
 
 my $Tester = Test::Builder->new;
 
@@ -56,13 +55,19 @@ C<html_ok>
 
 =head2 C<html_ok( [$lint, ] $html, $name )>
 
-Checks to see that C<$html> contains valid HTML.  The HTML::Lint
-object that it uses is just created from scratch.  If you have a custom
-HTML::Lint object that you'd prefer to use because of custom settings,
-you can pass that as the first parm.
+Checks to see that C<$html> contains valid HTML. 
 
 Checks to see if C<$html> contains valid HTML.  C<$html> being blank is OK.
 C<$html> being undef is not.
+
+If you pass an HTML::Lint object, C<html_ok()> will use that for its
+settings.  Otherwise, it will use the default rules.
+
+    my $lint = new HTML::Lint;
+    $lint->only_types( HTML::Lint::STRUCTURE );
+    html_ok( $lint, $content, "Web page passes structural tests only" );
+
+    html_ok( $content, "Web page passes ALL tests" );
 
 =cut
 
@@ -97,10 +102,10 @@ sub html_ok {
 
 =head1 BUGS
 
-None known at the time of writing.
-
-If you find any please let me know at E<lt>andy@petdance.comE<gt>,
-or report the problem with L<http://rt.cpan.org/>.
+Please report any bugs or feature requests to
+E<lt>bug-html-lint@rt.cpan.orgE<gt>, or through the web interface at
+L<http://rt.cpan.org>.  I will be notified, and then you'll automatically
+be notified of progress on your bug as I make changes.
 
 =head1 TO DO
 
@@ -121,7 +126,7 @@ this module is taken.
 
 =head1 LICENSE
 
-Copyright 2002 Andy Lester, All Rights Reserved.
+Copyright 2003 Andy Lester, All Rights Reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

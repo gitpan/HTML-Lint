@@ -1,8 +1,7 @@
-# $Id: Error.pm,v 1.21 2002/10/10 05:25:58 petdance Exp $
+# $Id: Error.pm,v 1.23 2003/04/05 04:17:03 petdance Exp $
 package HTML::Lint::Error;
 
 use strict;
-eval 'use warnings' if $] >= 5.006;
 
 use vars qw( %errors );
 
@@ -33,7 +32,7 @@ from most severe to least severe.
 
 For problems that relate to the structural validity of the code.
 Examples: Unclosed <TABLE> tags, incorrect values for attributes, and
-repeated atrributes.
+repeated attributes.
 
 =item * C<HELPER>
 

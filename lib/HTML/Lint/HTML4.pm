@@ -1,8 +1,7 @@
-# $Id: HTML4.pm,v 1.10 2002/10/10 05:04:41 petdance Exp $
+# $Id: HTML4.pm,v 1.12 2003/06/10 15:23:27 petdance Exp $
 package HTML::Lint::HTML4;
 
 use strict;
-eval 'use warnings' if $] >= 5.006;
 
 use base 'Exporter';
 
@@ -77,7 +76,7 @@ sub ns_only { return @_ };
     hr		=> hash( @core, @events, qw( align noshade size width ) ),
     html	=> hash( @i18n, qw( version )),
     iframe	=> hash( @core, qw( align frameborder height longdesc marginheight marginwidth name scrolling src width ) ),
-    img		=> hash( @std, qw( align alt border height hspace ismap longdesc src usemap vspace width ) ),
+    img		=> hash( @std, qw( align alt border height hspace ismap longdesc name src usemap vspace width ) ),
     input 	=> hash( @std, qw( accept accesskey align alt border checked disabled height width maxlength name onblur onchange onfocus onselect readonly size src tabindex type usemap value ) ),
     ins		=> hash( @std, qw( cite datetime ) ),
     isindex	=> hash( @core, @i18n, qw( prompt ) ),
