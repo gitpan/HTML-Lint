@@ -1,5 +1,12 @@
-# $Id: Changes,v 1.16 2002/07/08 16:13:27 petdance Exp $
+# $Id: Changes,v 1.20 2002/07/18 03:56:47 petdance Exp $
 Revision history for Perl extension HTML::Lint.
+
+1.10	July 17, 2002
+	* Added Test::HTML::Lint
+	* Removed the "use 5.6.0" from everywhere
+	* Included Neil Bowers' original weblint script, in the
+	  weblint-original/ directory.	Note that it does NOT get
+	  installed.
 
 1.02    July 8, 2002
 	* No functional changes.  It's all in the test suite.
@@ -20,7 +27,7 @@ Revision history for Perl extension HTML::Lint.
 
 0.94	May 31, 2002
 	* Moved the %HTML::Lint::Error::errors hash to be a package
-	variable, and not initialize it in an INIT block.
+	  variable, and not initialize it in an INIT block.
 
 0.93	May 28, 2002	
 	* weblint can now read URLs as well as files
@@ -31,11 +38,11 @@ Revision history for Perl extension HTML::Lint.
 	  Apache::Lint, and so brian's weblint++ can use it.
 	* errors() method respects wantarray (brian d foy)
 	* file(), line(), column(), errcode() and errtext() all return
-	blank instead of undef.
+	  blank instead of undef.
 
 0.91	January 8, 2002
 	* Fixed: Content description tags (<CITE>, <EM>, etc) were
-	not seen as being valid tags.
+	  not seen as being valid tags.
 
 0.90	July 8, 2001
 	First version of the rewrite as a subclass of HTML::Parser

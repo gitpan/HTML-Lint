@@ -1,4 +1,4 @@
-# $Id: MANIFEST,v 1.4 2002/07/08 14:10:18 petdance Exp $
+# $Id: MANIFEST,v 1.7 2002/07/18 04:02:45 petdance Exp $
 MANIFEST
 README
 Changes
@@ -6,10 +6,12 @@ Makefile.PL
 lib/HTML/Lint.pm
 lib/HTML/Lint/Error.pm
 lib/HTML/Lint/HTML4.pm
+lib/Test/HTML/Lint.pm
 pl/weblint
 pl/weblint-cgi
 t/00.load.t
 t/01.coverage.t
+t/10.test-html-lint.t
 t/attr-repeated.t
 t/attr-unknown.t
 t/elem-empty-but-closed.t
@@ -21,3 +23,13 @@ t/elem-unclosed.t
 t/elem-unknown.t
 t/elem-unopened.t
 t/random-nobr.t
+weblint-original/weblint.1
+weblint-original/Announce
+weblint-original/ChangeLog
+weblint-original/test.pl
+weblint-original/weblint
+weblint-original/weblintrc
+weblint-original/rc.new
+weblint-original/README
+weblint-original/Makefile
+weblint-original/Artistic

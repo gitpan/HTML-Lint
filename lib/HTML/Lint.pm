@@ -36,7 +36,6 @@ code through HTML::Lint and get it dumped into your Apache F<error_log>.
 
 =cut
 
-use 5.6.0;
 use strict;
 use warnings;
 
@@ -49,13 +48,13 @@ our @ISA = qw( HTML::Parser );
 
 =head1 VERSION
 
-Version 1.02
+Version 1.10
 
-    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.24 2002/07/08 16:13:27 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.26 2002/07/18 03:56:47 petdance Exp $
 
 =cut
 
-our $VERSION = '1.02';
+our $VERSION = '1.10';
 
 =head1 EXPORTS
 

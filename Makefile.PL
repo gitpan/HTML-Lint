@@ -1,4 +1,4 @@
-# $Id: Makefile.PL,v 1.5 2002/05/29 15:09:59 petdance Exp $
+# $Id: Makefile.PL,v 1.6 2002/07/18 03:18:00 petdance Exp $
 use strict;
 use ExtUtils::MakeMaker;
 use File::Find;
@@ -30,6 +30,7 @@ EOF
 	AUTHOR		=> 'Andy Lester <andy@petdance.com>',
 	PREREQ_PM	=> {
 		'Test::More'	=> 0,
+		'Test::Builder' => 0,
 		'HTML::Parser'	=> '3.20',
 		'HTML::Tagset'	=> '3.03',
 		'File::Find'    => 0,

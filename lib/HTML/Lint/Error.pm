@@ -1,7 +1,6 @@
-# $Id: Error.pm,v 1.8 2002/06/10 20:37:08 petdance Exp $
+# $Id: Error.pm,v 1.9 2002/07/15 19:19:20 petdance Exp $
 package HTML::Lint::Error;
 
-use 5.6.0;
 use strict;
 use warnings;
 

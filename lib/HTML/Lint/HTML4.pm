@@ -1,7 +1,6 @@
-# $Id: HTML4.pm,v 1.5 2002/07/04 04:08:44 petdance Exp $
+# $Id: HTML4.pm,v 1.6 2002/07/15 19:19:20 petdance Exp $
 package HTML::Lint::HTML4;
 
-use 5.6.0;
 use strict;
 use warnings;
 use base 'Exporter';
