@@ -1,5 +1,5 @@
 #!/usr/bin/perl -wT
-# $Id: weblint,v 1.13 2002/07/25 15:05:50 petdance Exp $
+# $Id: weblint,v 1.14 2002/08/05 22:03:24 petdance Exp $
 
 use strict;
 
@@ -17,6 +17,7 @@ my $fluff     = 1;
 GetOptions(
     "help"	    => \$help,
     "context:i"	    => \$context,
+    "only"	    => sub { $structure = $helper = $fluff = 0; },
     "structure!"    => \$structure,
     "helper!"	    => \$helper,
     "fluff!"	    => \$fluff,
@@ -88,4 +89,5 @@ Usage: weblint [filename or url]... (filename - reads STDIN)
     --[no]structure Structural issues, like unclosed tag pairs
     --[no]helper    Helper issues, like missing HEIGHT & WIDTH
     --[no]fluff	    Fluff that can be removed, like bad tag attributes
+    --only	    Turns off all other error types, as in --only --fluff
 

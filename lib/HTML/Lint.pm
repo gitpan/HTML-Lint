@@ -43,18 +43,19 @@ use HTML::Parser 3.20;
 use HTML::Tagset 3.03;
 use HTML::Lint::Error;
 use HTML::Lint::HTML4 qw( %isKnownAttribute %isRequired %isNonrepeatable %isObsolete );
+use HTML::Entities qw( %char2entity );
 
 our @ISA = qw( HTML::Parser );
 
 =head1 VERSION
 
-Version 1.12
+Version 1.13
 
-    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.32 2002/08/02 21:32:09 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.37 2002/08/05 22:07:38 petdance Exp $
 
 =cut
 
-our $VERSION = '1.12';
+our $VERSION = '1.13';
 
 =head1 EXPORTS
 
@@ -80,6 +81,7 @@ sub new {
 	    api_version => 3,
 	    start_h     => [ \&_start,	'self,tagname,line,column,@attr' ],
 	    end_h       => [ \&_end,	'self,tagname,line,column,@attr' ],
+	    text_h      => [ \&_text,	'self,text' ],
 	    strict_names => 1,
 	    );
 
@@ -215,6 +217,19 @@ sub _start {
     my $tagfunc = "_start_$tag";
     if ( $self->can($tagfunc) ) {
        $self->$tagfunc( $tag, @attr );
+    }
+}
+
+sub _text {
+    my ($self,$text) = @_;
+
+    while ( $text =~ /([^\x09\x0A\x0D -~])/g ) {
+	my $bad = $1;
+	$self->gripe(
+	    'text-use-entity', 
+		char => sprintf( '\x%02lX', ord($bad) ),
+		entity => $char2entity{ $bad },
+	);
     }
 }
 
@@ -376,20 +391,16 @@ L<HTML::Lint::Error>, L<HTML::Parser>
 
 =over 4
 
-=item * Allow a "check this string" method for building into tests.
+=item * Add some end-of-document tests.
 
 =item * Check for attributes that require values
 
 For instance, BGCOLOR should be BGCOLOR="something", but if it's just BGCOLOR, 
 that's a problem.  (Plus, that crashes IE OSX)
 
-=item * Check form validity: Are any fields duplicated on the form?
-
 =item * Add link checking
 
 =item * Handle obsolete tags
-
-=item * Create a .t file for each potential error message
 
 =item * Anything like <BR> or <P> inside of <A>
 

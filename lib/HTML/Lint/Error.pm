@@ -1,4 +1,4 @@
-# $Id: Error.pm,v 1.15 2002/08/02 21:26:54 petdance Exp $
+# $Id: Error.pm,v 1.17 2002/08/05 21:59:56 petdance Exp $
 package HTML::Lint::Error;
 
 use strict;
@@ -236,6 +236,8 @@ Andy Lester, E<lt>andy@petdance.comE<gt>
 
     'attr-repeated' =>		['${attr} attribute in <${tag}> is repeated', STRUCTURE],
     'attr-unknown' =>		['Unknown attribute "${attr}" for tag <${tag}>', FLUFF],
+
+    'text-use-entity' =>	['Invalid character ${char} should be written as ${entity}', STRUCTURE],
 );
 
 1; # happy
@@ -259,7 +261,6 @@ Errors that haven't been done yet.
 #comment-unclosed		Unclosed comment
 #comment-markup			Markup embedded in a comment can confuse some browsers
 
-#text-here-anchor		Bad form to use "here" as anchor text
 #text-literal-metacharacter	Metacharacter $char should be represented as "$otherchar"
 #text-title-length		The HTML spec recommends that that <TITLE> be no more than 64 characters
 #text-markup			Tag <${tag}> found in the <TITLE>, which will not be rendered properly.

@@ -5,7 +5,7 @@ use warnings;
 use Test::Builder;
 use Exporter;
 
-use HTML::Lint 1.12;
+use HTML::Lint 1.13;
 
 our @ISA = qw( HTML::Parser Exporter );
 
@@ -13,11 +13,11 @@ our @ISA = qw( HTML::Parser Exporter );
 
 Version 1.12
 
-    $Header: /cvsroot/html-lint/html-lint/lib/Test/HTML/Lint.pm,v 1.10 2002/08/02 21:32:09 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/Test/HTML/Lint.pm,v 1.12 2002/08/08 02:19:51 petdance Exp $
 
 =cut
 
-our $VERSION = '1.12';
+our $VERSION = '1.13';
 
 my $Tester = Test::Builder->new;
 

@@ -1,4 +1,4 @@
-# $Id: MANIFEST,v 1.7 2002/07/18 04:02:45 petdance Exp $
+# $Id: MANIFEST,v 1.8 2002/08/08 02:19:43 petdance Exp $
 MANIFEST
 README
 Changes
@@ -11,6 +11,7 @@ pl/weblint
 pl/weblint-cgi
 t/00.load.t
 t/01.coverage.t
+t/02.versions.t
 t/10.test-html-lint.t
 t/attr-repeated.t
 t/attr-unknown.t
@@ -22,6 +23,7 @@ t/elem-input-not-sizable.t
 t/elem-unclosed.t
 t/elem-unknown.t
 t/elem-unopened.t
+t/text-use-entity.t
 t/random-nobr.t
 weblint-original/weblint.1
 weblint-original/Announce
