@@ -5,19 +5,19 @@ use warnings;
 use Test::Builder;
 use Exporter;
 
-use HTML::Lint '1.11';
+use HTML::Lint 1.12;
 
 our @ISA = qw( HTML::Parser Exporter );
 
 =head1 VERSION
 
-Version 1.11
+Version 1.12
 
-    $Header: /cvsroot/html-lint/html-lint/lib/Test/HTML/Lint.pm,v 1.7 2002/07/25 18:33:59 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/Test/HTML/Lint.pm,v 1.10 2002/08/02 21:32:09 petdance Exp $
 
 =cut
 
-our $VERSION = '1.11';
+our $VERSION = '1.12';
 
 my $Tester = Test::Builder->new;
 
@@ -58,6 +58,9 @@ object that it uses is just created from scratch.  If you have a custom
 HTML::Lint object that you'd prefer to use because of custom settings,
 you can pass that as the first parm.
 
+Checks to see if C<$html> contains valid HTML.  C<$html> being blank is OK.
+C<$html> being undef is not.
+
 =cut
 
 sub html_ok {
@@ -70,11 +73,14 @@ sub html_ok {
     my $html = shift;
     my $name = shift;
 
-    $lint->parse( $html );
-
-    my $ok = $Tester->is_num( scalar $lint->errors, 0, $name );
-
-    $Tester->diag( $_->as_string ) for $lint->errors;
+    my $ok = defined $html;
+    if ( !$ok ) {
+	$Tester->ok( 0, $name );
+    } else {
+	$lint->parse( $html );
+	$ok = $Tester->is_num( scalar $lint->errors, 0, $name );
+	$Tester->diag( $_->as_string ) for $lint->errors;
+    }
 
     return $ok;
 }

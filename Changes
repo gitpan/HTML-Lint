@@ -1,5 +1,9 @@
-# $Id: Changes,v 1.26 2002/07/25 18:33:58 petdance Exp $
+# $Id: Changes,v 1.27 2002/08/02 21:11:48 petdance Exp $
 Revision history for Perl extension HTML::Lint.
+
+1.12	August 2, 2002
+	[FIXES]
+	* No longer squawks on html_ok( undef ).  It now specifically fails.
 
 1.11	July 25, 2002
 	[ENHANCEMENTS]

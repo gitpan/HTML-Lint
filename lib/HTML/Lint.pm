@@ -48,13 +48,13 @@ our @ISA = qw( HTML::Parser );
 
 =head1 VERSION
 
-Version 1.11
+Version 1.12
 
-    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.30 2002/07/25 18:33:58 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.32 2002/08/02 21:32:09 petdance Exp $
 
 =cut
 
-our $VERSION = '1.11';
+our $VERSION = '1.12';
 
 =head1 EXPORTS
 
@@ -222,10 +222,6 @@ sub _end {
     my ($self,$tag,$line,$column,@attr) = @_;
     $self->line($line);
     $self->column($column);
-
-    if ( @attr ) {
-	$self->gripe( 'attr-closing-tag' );
-    }
 
     if ( $HTML::Tagset::emptyElement{ $tag } ) {
 	$self->gripe( 'elem-empty-but-closed', tag => $tag );

@@ -1,4 +1,4 @@
-# $Id: Error.pm,v 1.14 2002/07/25 18:33:36 petdance Exp $
+# $Id: Error.pm,v 1.15 2002/08/02 21:26:54 petdance Exp $
 package HTML::Lint::Error;
 
 use strict;
@@ -255,7 +255,6 @@ Errors that haven't been done yet.
 #elem-head-missing-title 	No <TITLE> in <HEAD> element
 #elem-img-sizes-incorrect	<IMG> tag's HEIGHT and WIDTH attributes are incorrect.  They should be ${correct}.
 #attr-missing 			<${tag}> is missing a "${attr}" attribute
-#attr-closing-tag		Closing tag </${tag}> should not have any attributes.
 
 #comment-unclosed		Unclosed comment
 #comment-markup			Markup embedded in a comment can confuse some browsers
