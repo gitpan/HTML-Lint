@@ -49,13 +49,13 @@ our @ISA = qw( HTML::Parser );
 
 =head1 VERSION
 
-Version 1.01
+Version 1.02
 
-    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.23 2002/07/04 04:18:52 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.24 2002/07/08 16:13:27 petdance Exp $
 
 =cut
 
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 =head1 EXPORTS
 

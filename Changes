@@ -1,5 +1,10 @@
-# $Id: Changes,v 1.14 2002/07/04 04:18:52 petdance Exp $
+# $Id: Changes,v 1.16 2002/07/08 16:13:27 petdance Exp $
 Revision history for Perl extension HTML::Lint.
+
+1.02    July 8, 2002
+	* No functional changes.  It's all in the test suite.
+	* Added a whole mess of *.t files.  They've been in CVS all along,
+	  but I forgot to put them in the MANIFEST.  Ooops.
 
 1.01    July 3, 2002
 	* Tests use isa_ok() for more stringent checking of return objects
