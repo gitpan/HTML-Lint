@@ -16,7 +16,24 @@ HTML::Lint - check for HTML errors in a string or file
     foreach my $error ( $lint->errors ) {
 	print $error->as_string, "\n";
     }
-	
+
+HTML::Lint also comes with a wrapper program called F<weblint> that handles
+linting from the command line:
+
+    $ weblint http://www.cnn.com/
+    http://www.cnn.com/ (395:83) <IMG> tag has no HEIGHT and WIDTH attributes.
+    http://www.cnn.com/ (395:83) <IMG> does not have ALT text defined
+    http://www.cnn.com/ (396:217) Unknown element <nobr>
+    http://www.cnn.com/ (396:241) </nobr> with no opening <nobr>
+    http://www.cnn.com/ (842:7) target attribute in <a> is repeated
+
+And finally, you can also get Apache::Lint that passes any mod_perl-generated 
+code through HTML::Lint and get it dumped into your Apache F<error_log>.
+
+    [Mon Jun  3 14:03:31 2002] [warn] /foo.pl (1:45) </p> with no opening <p>
+    [Mon Jun  3 14:03:31 2002] [warn] /foo.pl (1:49) Unknown element <gronk>
+    [Mon Jun  3 14:03:31 2002] [warn] /foo.pl (1:56) Unknown attribute "x" for tag <table>
+
 =cut
 
 use 5.6.0;
@@ -32,13 +49,13 @@ our @ISA = qw( HTML::Parser );
 
 =head1 VERSION
 
-Version 0.94
+Version 1.00
 
-    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.10 2002/05/31 20:43:25 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.15 2002/06/05 21:29:43 petdance Exp $
 
 =cut
 
-our $VERSION = '0.94';
+our $VERSION = '1.00';
 
 =head1 EXPORTS
 
@@ -172,10 +189,10 @@ sub _start {
 		$self->gripe( 'attr-unknown', tag => $tag, attr => $attr );
 	    }
 	} # while attribs
-	$self->_element_push( $tag ) unless $HTML::Tagset::emptyElement{ $tag };
     } else {
 	$self->gripe( 'elem-unknown', tag => $tag );
     }
+    $self->_element_push( $tag ) unless $HTML::Tagset::emptyElement{ $tag };
 
     # Call any other overloaded func
     my $tagfunc = "_start_$tag";
@@ -320,6 +337,16 @@ that's a problem.  (Plus, that crashes IE OSX)
 =item * Handle obsolete tags
 
 =item * Create a .t file for each potential error message
+
+=item * Anything like <BR> or <P> inside of <A>
+
+=item * <TABLE>s that have no rows.
+
+=item * Form fields that aren't in a FORM
+
+=item * Check for valid entities, and that they end with semicolons
+
+=item * DIVs with nothing in them.
 
 =back
 
