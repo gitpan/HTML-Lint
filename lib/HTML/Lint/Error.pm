@@ -1,4 +1,4 @@
-# $Id: Error.pm,v 1.28 2003/12/19 22:00:22 petdance Exp $
+# $Id: Error.pm,v 1.29 2003/12/23 06:22:46 petdance Exp $
 package HTML::Lint::Error;
 
 use strict;
@@ -173,6 +173,7 @@ sub where {
 	$line = $self->line;
 	$col = $self->column;
     }
+    $col ||= 0;
     return sprintf( "(%s:%s)", $line, $col + 1 );
 }
 

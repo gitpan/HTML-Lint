@@ -1,4 +1,4 @@
-# $Id: MANIFEST,v 1.16 2003/09/12 01:59:32 petdance Exp $
+# $Id: MANIFEST,v 1.17 2003/12/23 06:22:46 petdance Exp $
 Changes
 MANIFEST
 Makefile.PL
@@ -19,6 +19,7 @@ t/20.error-types-export.t
 t/20.error-types-skip.t
 t/20.error-types.t
 t/30.test-builder.t
+t/40.where.t
 t/99.pod.t
 t/attr-repeated.t
 t/attr-unknown.t

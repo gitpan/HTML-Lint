@@ -1,7 +1,12 @@
-# $Id: Changes,v 1.51 2003/12/19 21:34:58 petdance Exp $
+# $Id: Changes,v 1.52 2003/12/23 06:22:46 petdance Exp $
 Revision history for Perl extension HTML::Lint and Test::HTML::Lint.
 
-1.25
+1.26	December 23, 2003
+	[FIXES]
+	* Fixed warnings if a lint error was found in the first column
+	  of the input file.  Thanks, Adam Monsen.
+
+1.25	December 19, 2003
 	[ENHANCEMENTS]
 	* html_ok() clears the HTML::Lint object that gets passed
 	  in, if any.  Thanks to Cees Hek.

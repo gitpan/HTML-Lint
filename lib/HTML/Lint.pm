@@ -52,13 +52,13 @@ use vars qw( @ISA $VERSION );
 
 =head1 VERSION
 
-Version 1.25
+Version 1.26
 
-    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.61 2003/12/19 22:00:22 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.62 2003/12/23 06:22:46 petdance Exp $
 
 =cut
 
-$VERSION = '1.25';
+$VERSION = '1.26';
 
 =head1 EXPORTS
 
