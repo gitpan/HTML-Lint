@@ -1,5 +1,8 @@
 Revision history for Perl extension HTML::Lint.
 
+0.90	July 8, 2001
+	First version of the rewrite as a subclass of HTML::Parser
+
 0.03	May 15, 2001
 	* Fixed t/*.t problems
 

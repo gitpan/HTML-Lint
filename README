@@ -1,4 +1,4 @@
-HTML::Lint Version 0.03
+HTML::Lint Version 0.90
 
 HTML::Lint is broken down into a number of perl modules:
 
@@ -6,7 +6,6 @@ HTML::Lint is broken down into a number of perl modules:
 	HTML::Lint::HTML4	- encapsulation of messages
 	HTML::Lint::Messages	- encapsulation of messages
 	HTML::Lint::Constants	- constants used in the different modules
-	HTML::Lint::Test	- test harness
 
 The "weblint" script is now pretty much a wrapper around the HTML::Lint module.
 The following things aren't implemented in the weblint script at the moment:

@@ -17,8 +17,9 @@ sub filecheck {
 	PMLIBDIRS	=> [qw(lib/)],
 	AUTHOR		=> 'Andy Lester <andy@petdance.com>',
 	PREREQ_PM	=> {
-		'Getopt::Long'   => 0,
-		'File::Find'     => 0,
+		'HTML::Parser'	=> '3.20',
+		'HTML::Tagset'	=> '3.03',
+		'File::Find'    => 0,
 		},
 	EXE_FILES	=> [qw(pl/weblint)],
 	dist => {

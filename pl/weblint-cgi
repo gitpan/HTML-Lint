@@ -13,7 +13,7 @@ use Env qw(SCRIPT_NAME REQUEST_TYPE);
 use CGI;
 use LWP::Simple;
 
-   $VERSION = sprintf("%d.%02d", q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/);
+   $VERSION = sprintf("%d.%02d", q$Revision: 1.1.1.1 $ =~ /(\d+)\.(\d+)/);
 my $weblint;
 my $cgi = CGI->new();
 my $url = $cgi->param('url') || 'http://';
@@ -154,7 +154,7 @@ config files.
 
 =head1 VERSION
 
-$Revision: 1.1 $
+$Revision: 1.1.1.1 $
 
 =head1 AVAILABILITY
 
