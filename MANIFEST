@@ -1,8 +1,8 @@
-# $Id: MANIFEST,v 1.9 2002/10/10 05:33:17 petdance Exp $
-MANIFEST
-README
+# $Id: MANIFEST,v 1.12 2003/09/02 22:21:48 petdance Exp $
 Changes
+MANIFEST
 Makefile.PL
+README
 lib/HTML/Lint.pm
 lib/HTML/Lint/Error.pm
 lib/HTML/Lint/HTML4.pm
@@ -13,6 +13,11 @@ t/00.load.t
 t/01.coverage.t
 t/02.versions.t
 t/10.test-html-lint.t
+t/11.test-html-lint-overload.t
+t/20.error-types-export.t
+t/20.error-types-skip.t
+t/20.error-types.t
+t/99.pod.t
 t/attr-repeated.t
 t/attr-unknown.t
 t/doc-tag-required.t
@@ -25,15 +30,16 @@ t/elem-nonrepeatable.t
 t/elem-unclosed.t
 t/elem-unknown.t
 t/elem-unopened.t
-t/text-use-entity.t
 t/random-nobr.t
-weblint-original/weblint.1
+t/text-use-entity.t
 weblint-original/Announce
+weblint-original/Artistic
 weblint-original/ChangeLog
+weblint-original/Makefile
+weblint-original/README
+weblint-original/rc.new
 weblint-original/test.pl
 weblint-original/weblint
+weblint-original/weblint.1
 weblint-original/weblintrc
-weblint-original/rc.new
-weblint-original/README
-weblint-original/Makefile
-weblint-original/Artistic
+META.yml                                Module meta-data (added by MakeMaker)

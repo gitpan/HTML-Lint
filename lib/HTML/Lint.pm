@@ -52,13 +52,13 @@ use vars qw( @ISA $VERSION );
 
 =head1 VERSION
 
-Version 1.22
+Version 1.23
 
-    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.52 2003/06/11 14:04:11 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.54 2003/09/02 22:19:44 petdance Exp $
 
 =cut
 
-$VERSION = '1.22';
+$VERSION = '1.23';
 
 =head1 EXPORTS
 
@@ -72,13 +72,23 @@ the C<parse()> or C<parse_file()> methods.
 
 =head2 C<new()>
 
-Create an HTML::Lint object, which inherits from HTML::Parser.  The C<new> 
-method takes no arguments.
+Create an HTML::Lint object, which inherits from HTML::Parser.
+You may pass the types of errors you want to check for in the
+C<only_types> parm.
+
+    my $lint = HTML::Lint->new( only_types => HTML::Lint::Error::STRUCTURE );
+
+If you want more than one, you must pass an arrayref:
+
+    my $lint = HTML::Lint->new( 
+	only_types => [HTML::Lint::Error::STRUCTURE, HTML::Lint::Error::FLUFF] );
 
 =cut
 
 sub new {
     my $class = shift;
+    my %args = @_;
+
     my $self  = 
         HTML::Parser->new(
 	    api_version => 3,
@@ -96,6 +106,13 @@ sub new {
     $self->{_stack} = [];
     $self->{_first_occurrence} = {};
     $self->{_types} = [];
+
+    if ( my $only = $args{only_types} ) {
+	$self->only_types( ref $only eq "ARRAY" ? @$only : $only );
+	delete $args{only_types};
+    }
+
+    warn "Unknown argument $_\n" for keys %args;
 
     return $self;
 }

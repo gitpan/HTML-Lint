@@ -1,5 +1,15 @@
-# $Id: Changes,v 1.41 2003/06/11 14:05:07 petdance Exp $
-Revision history for Perl extension HTML::Lint.
+# $Id: Changes,v 1.45 2003/09/02 22:19:43 petdance Exp $
+Revision history for Perl extension HTML::Lint and Test::HTML::Lint.
+
+1.23	September 02, 2003
+	[ENHANCEMENTS]
+	* The types of errors to find may now be passed in the
+	  HTML::Lint constructor.
+	* Can now export the error types from HTML::Lint::Error.
+
+	[DOCUMENTATION]
+	* Fixed a bug in Test::HTML::Lint docs. (Thanks to Leon
+	  Brocard and about 90 other people)
 
 1.22	JUNE 11, 2003
 	[ENHANCEMENTS]

@@ -1,8 +1,17 @@
-# $Id: Error.pm,v 1.23 2003/04/05 04:17:03 petdance Exp $
+# $Id: Error.pm,v 1.24 2003/09/02 19:20:24 petdance Exp $
 package HTML::Lint::Error;
 
 use strict;
 
+use Exporter;
+
+use vars qw( @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS );
+@ISA = 'Exporter';
+
+@EXPORT = ();
+@EXPORT_OK = qw( STRUCTURE HELPER FLUFF );
+%EXPORT_TAGS = ( types => [@EXPORT_OK] ); 
+ 
 use vars qw( %errors );
 
 =head1 NAME

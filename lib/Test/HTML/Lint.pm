@@ -5,7 +5,7 @@ use strict;
 use Test::Builder;
 use Exporter;
 
-use HTML::Lint 1.22;
+use HTML::Lint 1.23;
 
 use vars qw( @ISA $VERSION @EXPORT );
 
@@ -13,13 +13,13 @@ use vars qw( @ISA $VERSION @EXPORT );
 
 =head1 VERSION
 
-Version 1.22
+Version 1.23
 
-    $Header: /cvsroot/html-lint/html-lint/lib/Test/HTML/Lint.pm,v 1.19 2003/06/11 14:04:13 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/Test/HTML/Lint.pm,v 1.22 2003/09/02 22:19:44 petdance Exp $
 
 =cut
 
-$VERSION = '1.22';
+$VERSION = '1.23';
 
 my $Tester = Test::Builder->new;
 
@@ -29,8 +29,7 @@ Test::HTML::Lint - Test::More-style wrapper around HTML::Lint
 
 =head1 SYNOPSIS
 
-    use Test::More tests => 4;
-    use Test::HTML::Lint;
+    use Test::HTML::Lint tests => 4;
 
     my $table = build_display_table();
     html_ok( $table, 'Built display table properly' );
@@ -52,6 +51,15 @@ C<html_ok>
 
 @EXPORT = qw( html_ok );
 
+sub import {
+    my $self = shift;
+    my $pack = caller;
+
+    $Tester->exported_to($pack);
+    $Tester->plan(@_);
+
+    $self->export_to_level(1, $self, @EXPORT);
+}
 
 =head2 C<html_ok( [$lint, ] $html, $name )>
 
@@ -61,11 +69,12 @@ Checks to see if C<$html> contains valid HTML.  C<$html> being blank is OK.
 C<$html> being undef is not.
 
 If you pass an HTML::Lint object, C<html_ok()> will use that for its
-settings.  Otherwise, it will use the default rules.
+settings.
 
-    my $lint = new HTML::Lint;
-    $lint->only_types( HTML::Lint::STRUCTURE );
+    my $lint = new HTML::Lint( only_types => STRUCTURE );
     html_ok( $lint, $content, "Web page passes structural tests only" );
+
+Otherwise, it will use the default rules.
 
     html_ok( $content, "Web page passes ALL tests" );
 
@@ -102,10 +111,10 @@ sub html_ok {
 
 =head1 BUGS
 
-Please report any bugs or feature requests to
-E<lt>bug-html-lint@rt.cpan.orgE<gt>, or through the web interface at
-L<http://rt.cpan.org>.  I will be notified, and then you'll automatically
-be notified of progress on your bug as I make changes.
+Please report any bugs or feature requests to C<bug-html-lint@rt.cpan.org>,
+or through the web interface at L<http://rt.cpan.org>.  I will be
+notified, and then you'll automatically be notified of progress on
+your bug as I make changes.
 
 =head1 TO DO
 
@@ -136,7 +145,7 @@ employers of the various contributors to the code.
 
 =head1 AUTHOR
 
-Andy Lester, E<lt>andy@petdance.comE<gt>
+Andy Lester, C<andy@petdance.com>
 
 =cut
 

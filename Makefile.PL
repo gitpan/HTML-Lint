@@ -1,4 +1,4 @@
-# $Id: Makefile.PL,v 1.6 2002/07/18 03:18:00 petdance Exp $
+# $Id: Makefile.PL,v 1.7 2003/09/02 22:25:18 petdance Exp $
 use strict;
 use ExtUtils::MakeMaker;
 use File::Find;
@@ -29,6 +29,7 @@ EOF
 	PMLIBDIRS	=> [qw(lib/)],
 	AUTHOR		=> 'Andy Lester <andy@petdance.com>',
 	PREREQ_PM	=> {
+		'Exporter'	=> 0,
 		'Test::More'	=> 0,
 		'Test::Builder' => 0,
 		'HTML::Parser'	=> '3.20',
