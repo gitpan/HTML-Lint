@@ -1,5 +1,17 @@
-# $Id: Changes,v 1.20 2002/07/18 03:56:47 petdance Exp $
+# $Id: Changes,v 1.26 2002/07/25 18:33:58 petdance Exp $
 Revision history for Perl extension HTML::Lint.
+
+1.11	July 25, 2002
+	[ENHANCEMENTS]
+	* Added the concept of HTML::Lint::Error type, which is one of
+	  Structure, Helper or Fluff.
+	* weblint now takes --[no]structure, --[no]helper, --[no]fluff.
+	* Added the ability to overload html_ok()'s HTML::Lint object
+	  with one of your own.
+
+	[FIXES]
+	* Fixed line number goof in Test::HTML::Lint
+	* Fixed line positions in weblint on files (URL reading was OK)
 
 1.10	July 17, 2002
 	* Added Test::HTML::Lint

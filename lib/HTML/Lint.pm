@@ -7,10 +7,10 @@ HTML::Lint - check for HTML errors in a string or file
 =head1 SYNOPSIS
 
     my $lint = HTML::Lint->new;
-	
+
     $lint->parse( $data );
     $lint->parse_file( $filename );
-	
+
     my $error_count = $lint->errors;
 
     foreach my $error ( $lint->errors ) {
@@ -48,13 +48,13 @@ our @ISA = qw( HTML::Parser );
 
 =head1 VERSION
 
-Version 1.10
+Version 1.11
 
-    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.26 2002/07/18 03:56:47 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.30 2002/07/25 18:33:58 petdance Exp $
 
 =cut
 
-our $VERSION = '1.10';
+our $VERSION = '1.11';
 
 =head1 EXPORTS
 
@@ -66,9 +66,7 @@ C<HTML::Lint> is based on the L<HTML::Parser> module.  Any method call that work
 C<HTML::Parser> will work in <HTML::Lint>.  However, you'll probably only want to use
 the C<parse()> or C<parse_file()> methods.
 
-=over 4
-
-=item new()
+=head2 C<new()>
 
 Create an HTML::Lint object, which inherits from HTML::Parser.  The C<new> 
 method takes no arguments.
@@ -90,11 +88,28 @@ sub new {
     $self->{_errors} = [];
     $self->{_stack} = [];
     $self->{_first_occurrence} = {};
+    $self->{_types} = [];
 
     return $self;
 }
 
-=item errors()
+=head2 C<only_types( $type1[, $type2...] )>
+
+Specifies to only want errors of a certain type.
+
+    $lint->only_types( HTML::Lint::Error::STRUCTURE );
+
+Calling this without parameters accepts all error types.
+
+=cut
+
+sub only_types {
+    my $self = shift;
+
+    $self->{_types} = [@_];
+}
+
+=head2 C<errors()>
 
 In list context, C<errors> returns all of the errors found in 
 the parsed text.  In scalar context, it returns the number of
@@ -112,7 +127,7 @@ sub errors {
     }
 }
 
-=item clear_errors()
+=head2 C<clear_errors()>
 
 Clears the list of errors, in case you want to print and clear, print and clear.
 
@@ -131,10 +146,13 @@ sub gripe {
     my $err = new HTML::Lint::Error( 
     	$self->file, $self->line, $self->column, @_ );
 
-    push( @{$self->{_errors}}, $err );
+    my @keeps = @{$self->{_types}};
+    if ( !@keeps || $err->is_type(@keeps) ) {
+	push( @{$self->{_errors}}, $err );
+    }
 }
 
-=head2 newfile( $filename )
+=head2 C<newfile( $filename )>
 
 Call C<newfile()> whenever you switch to another file in a batch of 
 linting.  Otherwise, the object thinks everything is from the same file.
@@ -353,9 +371,6 @@ sub _check_test_more {
 	diag( $_->as_string ) for @errors;
     }
 }
-
-
-=back
 
 =head1 SEE ALSO
 

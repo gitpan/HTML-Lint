@@ -5,25 +5,21 @@ use warnings;
 use Test::Builder;
 use Exporter;
 
-use HTML::Lint 1.10;
+use HTML::Lint '1.11';
 
 our @ISA = qw( HTML::Parser Exporter );
 
 =head1 VERSION
 
-Version 1.10
+Version 1.11
 
-    $Header: /cvsroot/html-lint/html-lint/lib/Test/HTML/Lint.pm,v 1.4 2002/07/18 03:56:47 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/Test/HTML/Lint.pm,v 1.7 2002/07/25 18:33:59 petdance Exp $
 
 =cut
 
-our $VERSION = '1.10';
-
-our @EXPORT = qw( html_ok );
+our $VERSION = '1.11';
 
 my $Tester = Test::Builder->new;
-
-my $lint = HTML::Lint->new;
 
 =head1 NAME
 
@@ -46,17 +42,34 @@ L<Test::More> and friends.
 If you are not already familiar with L<Test::More> now would be the time
 to go take a look.
 
+=head1 EXPORT
+
+C<html_ok>
+
 =cut
 
-=head2 C<html_ok( $html, $name )>
+our @EXPORT = qw( html_ok );
+
+
+=head2 C<html_ok( [$lint, ] $html, $name )>
+
+Checks to see that C<$html> contains valid HTML.  The HTML::Lint
+object that it uses is just created from scratch.  If you have a custom
+HTML::Lint object that you'd prefer to use because of custom settings,
+you can pass that as the first parm.
 
 =cut
 
 sub html_ok {
+    my $lint;
+    if ( ref($_[0]) eq "HTML::Lint" ) {
+	$lint = shift;
+    } else {
+	$lint = HTML::Lint->new;
+    }
     my $html = shift;
     my $name = shift;
 
-    $lint->clear_errors();
     $lint->parse( $html );
 
     my $ok = $Tester->is_num( scalar $lint->errors, 0, $name );

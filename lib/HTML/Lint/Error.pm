@@ -1,4 +1,4 @@
-# $Id: Error.pm,v 1.9 2002/07/15 19:19:20 petdance Exp $
+# $Id: Error.pm,v 1.14 2002/07/25 18:33:36 petdance Exp $
 package HTML::Lint::Error;
 
 use strict;
@@ -20,6 +20,38 @@ None.  It's all object-based.
 
 Almost everything is an accessor.
 
+=head1 Error types: C<STRUCTURE>, C<HELPER>, C<FLUFF>
+
+Each error has a type.  Note that these roughly, but not exactly, go
+from most severe to least severe.
+
+=over 4
+
+=item * C<STRUCTURE>
+
+For problems that relate to the structural validity of the code.
+Examples: Unclosed <TABLE> tags, incorrect values for attributes, and
+repeated atrributes.
+
+=item * C<HELPER>
+
+Helpers are notes that will help you with your HTML, or that will help
+the browser render the code better or faster.  Example: Missing HEIGHT
+and WIDTH attributes in an IMG tag.
+
+=item * C<FLUFF>
+
+Fluff is for items that don't hurt your page, but don't help it either.
+This is usually something like an unknown attribute on a tag.
+
+=back
+
+=cut
+
+use constant STRUCTURE	=> 1;
+use constant HELPER	=> 2;
+use constant FLUFF	=> 3;
+
 =head2 new()
 
 Create an object.  It's not very exciting.
@@ -33,6 +65,7 @@ sub new {
     my $line = shift;
     my $column = shift;
     my $errcode = shift;
+    my @errparms = @_;
 
     # Add an element that says what tag caused the error (B, TR, etc)
     # so that we can match 'em up down the road.
@@ -41,10 +74,13 @@ sub new {
 	_line => $line,
 	_column => $column,
 	_errcode => $errcode,
-	_errtext => _expand_error( $errcode, @_ ),
+	_errtext => undef,
+	_type => undef,
     };
 
     bless $self, $class;
+
+    $self->_expand_error( $errcode, @errparms );
 
     return $self;
 }
@@ -52,9 +88,17 @@ sub new {
 our %errors;
 
 sub _expand_error {
+    my $self = shift;
+
     my $errcode = shift;
     
-    my $str = $errors{$errcode} || "Unknown code: $errcode";
+    my $specs = $errors{$errcode};
+    my $str;
+    if ( $specs ) {
+	($str, $self->{_type}) = @$specs;
+    } else {
+	$str = "Unknown code: $errcode";
+    }
 
     while ( @_ ) {
 	my $var = shift;
@@ -62,7 +106,26 @@ sub _expand_error {
 	$str =~ s/\$\{$var\}/$val/g;
     }
 
-    return $str;
+    $self->{_errtext} = $str;
+}
+
+=head2 C<is_type( $type1 [, $type2 ] )>
+
+Tells if any of I<$type1>, I<$type2>... match the error's type.
+Returns the type that matched.
+
+    if ( $err->is_type( HTML::Lint::Error::STRUCTURE ) ) {....
+
+=cut
+
+sub is_type {
+    my $self = shift;
+
+    for my $matcher ( @_ ) {
+	return $matcher if $matcher eq $self->{_type};
+    }
+
+    return undef;
 }
 
 =head2 C<where()>
@@ -124,6 +187,10 @@ Returns the HTML::Lint error code.  Don't rely on this, because it will probably
 
 Descriptive text of the error
 
+=head2 type()
+
+Type of the error
+
 =cut
 
 sub file 	{ my $self = shift; return $self->{_file} 	|| '' }
@@ -131,11 +198,12 @@ sub line 	{ my $self = shift; return $self->{_line} 	|| '' }
 sub column 	{ my $self = shift; return $self->{_column} 	|| '' }
 sub errcode 	{ my $self = shift; return $self->{_errcode} 	|| '' }
 sub errtext 	{ my $self = shift; return $self->{_errtext} 	|| '' }
+sub type 	{ my $self = shift; return $self->{_type} 	|| '' }
 
 
 =head1 TODO
 
-=item * None
+None, other than incorporating more errors, as driven by HTML::Lint.
 
 =head1 LICENSE
 
@@ -155,32 +223,37 @@ Andy Lester, E<lt>andy@petdance.comE<gt>
 
 # Generic element stuff
 %errors = (
+    'elem-unknown' =>		['Unknown element <${tag}>', STRUCTURE],
+    'elem-unopened' =>		['</${tag}> with no opening <${tag}>', STRUCTURE],
+    'elem-unclosed' =>		['<${tag}> at ${where} is never closed', STRUCTURE],
+    'elem-empty-but-closed' =>	['<${tag}> is not a container -- </${tag}> is not allowed', STRUCTURE],
+    'elem-input-image-sizes-missing' =>
+				['<INPUT TYPE="image"> can benefit from HEIGHT and WIDTH, like an IMG tag.', HELPER],
+    'elem-input-not-sizable' => ['<INPUT> tag cannot have HEIGHT and WIDTH unless TYPE="image"', STRUCTURE],
+
+    'elem-img-sizes-missing' =>	['<IMG> tag has no HEIGHT and WIDTH attributes.', HELPER],
+    'elem-img-alt-missing' =>   ['<IMG> does not have ALT text defined', HELPER],
+
+    'attr-repeated' =>		['${attr} attribute in <${tag}> is repeated', STRUCTURE],
+    'attr-unknown' =>		['Unknown attribute "${attr}" for tag <${tag}>', FLUFF],
+);
+
+1; # happy
+
+__DATA__
+Errors that haven't been done yet.
+
 #elem-head-only			<${tag}> can only appear in the <HEAD> element
-    'elem-unknown' =>		'Unknown element <${tag}>',
 #elem-nonrepeatable 		Element <${tag}> is non-repeatable, but already showed up at line ${n}
 #elem-non-head-element 		<${tag}> cannot appear in the <HEAD> element
 #elem-obsolete 			<${tag}> is obsolete
-    'elem-unopened' =>		'</${tag}> with no opening <${tag}>',
-    'elem-unclosed' =>		'<${tag}> at ${where} is never closed',
 #elem-nested-element 		<${tag}> cannot be nested -- one is already opened at ${where}
-    'elem-empty-but-closed' =>	'<${tag}> is not a container -- </${tag}> is not allowed',
 #elem-wrong-context		Illegal context for <${tag}> -- must appear in <${othertag}> tag.
 #elem-heading-in-anchor		<A> should be inside <${tag}>, not <${tag}> inside <A>
-    'elem-input-image-sizes-missing' =>
-				'<INPUT TYPE="image"> can benefit from HEIGHT and WIDTH, like an IMG tag.',
-    'elem-input-not-sizable' => '<INPUT> tag cannot have HEIGHT and WIDTH unless TYPE="image"',
 
-# HEAD-specific
 #elem-head-missing		No <HEAD> element found
 #elem-head-missing-title 	No <TITLE> in <HEAD> element
-
-# IMG-specific
-    'elem-img-sizes-missing' =>	'<IMG> tag has no HEIGHT and WIDTH attributes.',
 #elem-img-sizes-incorrect	<IMG> tag's HEIGHT and WIDTH attributes are incorrect.  They should be ${correct}.
-    'elem-img-alt-missing' =>   '<IMG> does not have ALT text defined',
-
-    'attr-repeated' =>		'${attr} attribute in <${tag}> is repeated',
-    'attr-unknown' =>		'Unknown attribute "${attr}" for tag <${tag}>',
 #attr-missing 			<${tag}> is missing a "${attr}" attribute
 #attr-closing-tag		Closing tag </${tag}> should not have any attributes.
 
@@ -205,6 +278,3 @@ Andy Lester, E<lt>andy@petdance.comE<gt>
 # 'meta-in-pre' => [ ENABLED, MC_ERROR, 'you should use "$argv[0]" in place of "$argv[1]", even in a PRE element.', ],
 #  'implied-element' => [ ENABLED, MC_WARNING, 'saw <$argv[0]> element, but no <$argv[1]> element', ],
 #  'button-usemap' => [ ENABLED, MC_ERROR, 'illegal to associate an image map with IMG inside a BUTTON', ],
-);
-
-1; # happy
