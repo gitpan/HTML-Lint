@@ -1,4 +1,4 @@
-# $Id: Makefile.PL,v 1.2 2002/02/23 08:38:52 comdog Exp $
+# $Id: Makefile.PL,v 1.5 2002/05/29 15:09:59 petdance Exp $
 use strict;
 use ExtUtils::MakeMaker;
 use File::Find;
@@ -10,6 +10,17 @@ sub filecheck {
 	die "Aborting: Swapfile $_ found" if /\.swp$/;
 }
 
+eval { require LWP::Simple; };
+
+if ( $@ ) {
+    print <<EOF;
+    
+NOTE: It seems that you don't have LWP::Simple installed.
+      The weblint program will not be able to retrieve web pages.
+
+EOF
+}
+
 &WriteMakefile(
 	NAME		=> 'HTML::Lint',
 	DISTNAME	=> 'HTML-Lint',
@@ -18,6 +29,7 @@ sub filecheck {
 	PMLIBDIRS	=> [qw(lib/)],
 	AUTHOR		=> 'Andy Lester <andy@petdance.com>',
 	PREREQ_PM	=> {
+		'Test::More'	=> 0,
 		'HTML::Parser'	=> '3.20',
 		'HTML::Tagset'	=> '3.03',
 		'File::Find'    => 0,

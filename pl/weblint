@@ -1,5 +1,5 @@
 #!/usr/bin/perl -wT
-# $Id: weblint,v 1.2 2002/02/23 08:40:43 comdog Exp $
+# $Id: weblint,v 1.5 2002/05/29 15:09:59 petdance Exp $
 
 use strict;
 
@@ -8,21 +8,37 @@ use lib qw( /home/alester/html-lint/lib );
 use HTML::Lint;
 use HTML::Lint::HTML4;
 
-die "Must specify a file to lint\n" unless @ARGV;
-
+my $currfile = "";
 my $lint = new HTML::Lint;
-for my $filename ( @ARGV ) {
-    $lint->newfile( $filename );
 
-    open( my $fh, $filename ) or $lint->gripe( 'file-cannot-open', filename => $filename, error => $! ), next;
-    
-    while ( my $line = <$fh> ) {
-	$lint->parse( $line );
+if ( !@ARGV ) {
+    print "weblint v$HTML::Lint::VERSION\n";
+    print "Usage: weblint [filename-or-url...]\n";
+    exit 1;
+}
+
+for my $url ( @ARGV ) {
+    $lint->newfile( $url );
+    if ( $url =~ /^https?:/ ) {
+	eval { require LWP::Simple };
+	if ( $@ ) {
+	    warn "Can't retrieve URLs without LWP::Simple installed";
+	    next;
+	}
+
+	my $content = LWP::Simple::get( $url );
+	if ( $content ) {
+	    $lint->parse( $content );
+	} else {
+	    warn "Unable to fetch $url\n";
+	}
+    } else {
+	open( my $fh, "<", $url ) or die "Can't open $url: $!";
+	local $/ = undef;
+	$lint->parse( <$fh> );
+	$lint->eof();
+	close $fh;
     }
-
-    close $fh;
-
-    $lint->eof;
 } # for files
 
 for my $error ( $lint->errors() ) {

@@ -1,4 +1,4 @@
-# $Id: HTML4.pm,v 1.2 2002/02/23 08:38:52 comdog Exp $
+# $Id: HTML4.pm,v 1.3 2002/05/29 14:59:45 petdance Exp $
 package HTML::Lint::HTML4;
 
 use 5.6.0;
@@ -124,7 +124,7 @@ our %isKnownAttribute = (
     ul		=> hash( @std, qw( compact type ) ),
 );
 
-   
+=for oldobsoletestuffthatIwanttokeep 
 my %booger = (
     'maybePaired'  => 'LI DT DD P TD TH TR OPTION COLGROUP THEAD TFOOT TBODY COL',
 
@@ -238,6 +238,7 @@ my %booger = (
 	],
 
 );
+=cut
 
 1;
 

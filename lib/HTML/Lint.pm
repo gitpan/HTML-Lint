@@ -1,4 +1,3 @@
-# $Id: Lint.pm,v 1.3 2002/02/23 08:38:52 comdog Exp $
 package HTML::Lint;
 
 =head1 NAME
@@ -7,17 +6,16 @@ HTML::Lint - check for HTML errors in a string or file
 
 =head1 SYNOPSIS
 
-	my $lint = HTML::Lint->new;
+    my $lint = HTML::Lint->new;
 	
-	$lint->parse( $data );
-	$lint->parse_file( $filename );
+    $lint->parse( $data );
+    $lint->parse_file( $filename );
 	
-	my $error_count = $lint->errors;
-	
-	foreach my $error ( $lint->errors )
-		{
-		print $error->as_string, "\n";
-		}
+    my $error_count = $lint->errors;
+
+    foreach my $error ( $lint->errors ) {
+	print $error->as_string, "\n";
+    }
 	
 =cut
 
@@ -34,11 +32,13 @@ our @ISA = qw( HTML::Parser );
 
 =head1 VERSION
 
-Version 0.92
+Version 0.93
+
+    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.8 2002/05/21 02:29:47 petdance Exp $
 
 =cut
 
-our $VERSION = '0.92';
+our $VERSION = '0.93';
 
 =head1 EXPORTS
 
@@ -104,6 +104,13 @@ sub gripe {
 
     push( @{$self->{_errors}}, $err );
 }
+
+=head2 newfile( $filename )
+
+Call C<newfile()> whenever you switch to another file in a batch of 
+linting.  Otherwise, the object thinks everything is from the same file.
+
+=cut
 
 sub newfile($) {
     my $self = shift;
@@ -280,11 +287,18 @@ sub _start_input {
 
 =head1 SEE ALSO
 
-L<HTML::Lint::Errors>, L<HTML::Parser>
+L<HTML::Lint::Error>, L<HTML::Parser>
 
 =head1 TODO
 
 =over 4
+
+=item * Allow a "check this string" method for building into tests.
+
+=item * Check for attributes that require values
+
+For instance, BGCOLOR should be BGCOLOR="something", but if it's just BGCOLOR, 
+that's a problem.  (Plus, that crashes IE OSX)
 
 =item * Check form validity: Are any fields duplicated on the form?
 

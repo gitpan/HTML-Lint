@@ -1,11 +1,9 @@
-# $Id: Error.pm,v 1.3 2002/02/26 17:29:55 petdance Exp $
+# $Id: Error.pm,v 1.5 2002/05/29 14:59:59 petdance Exp $
 package HTML::Lint::Error;
 
 use 5.6.0;
 use strict;
 use warnings;
-
-our %_errors;
 
 =head1 NAME
 
@@ -52,23 +50,23 @@ sub new {
     return $self;
 }
 
-sub _prep_errors {
+our %errors;
+INIT {
     while (<DATA>) {
 	chomp;
 	next if /^\s*#/;
 	next if /^$/;
 
 	my ($name,$text) = split( /\s+/, $_, 2 );
-	$_errors{$name} = $text;
+	$errors{$name} = $text;
     } # while
 }
+
 
 sub _expand_error {
     my $errcode = shift;
     
-    _prep_errors unless %_errors;
-    
-    my $str = $_errors{$errcode} || "Unknown code: $errcode";
+    my $str = $errors{$errcode} || "Unknown code: $errcode";
 
     while ( @_ ) {
 	my $var = shift;
@@ -78,6 +76,18 @@ sub _expand_error {
 
     return $str;
 }
+
+=head2 C<where()>
+
+Returns a formatted string that describes where in the file the error has occurred.
+
+For example,
+
+    (14:23)
+
+for line 14, column 23.
+
+=cut
 
 sub where {
     my $line;
@@ -94,11 +104,39 @@ sub where {
     return sprintf( "(%s:%s)", $line, $col + 1 );
 }
 
+=head2 C<as_string()>
+
+Returns a nicely-formatted string for printing out to stdout or some similar user thing.
+
+=cut
+
 sub as_string {
     my $self = shift;
 
     return sprintf( "%s %s %s", $self->file, $self->where, $self->errtext );
 }
+
+=head2 file()
+
+Returns the filename of the error, as set by the caller.
+
+=head2 line()
+
+Returns the line number of the error.
+
+=head2 column()
+
+Returns the column number, starting from 0
+
+=head2 errcode()
+
+Returns the HTML::Lint error code.  Don't rely on this, because it will probably go away.
+
+=head2 errtext()
+
+Descriptive text of the error
+
+=cut
 
 sub file 	{ my $self = shift; return $self->{_file} 	|| '' }
 sub line 	{ my $self = shift; return $self->{_line} 	|| '' }
