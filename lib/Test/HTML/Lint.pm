@@ -13,13 +13,13 @@ use vars qw( @ISA $VERSION @EXPORT );
 
 =head1 VERSION
 
-Version 1.23
+Version 1.25
 
-    $Header: /cvsroot/html-lint/html-lint/lib/Test/HTML/Lint.pm,v 1.23 2003/09/12 01:38:32 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/Test/HTML/Lint.pm,v 1.25 2003/12/19 22:00:22 petdance Exp $
 
 =cut
 
-$VERSION = '1.24';
+$VERSION = '1.25';
 
 my $Tester = Test::Builder->new;
 
@@ -61,7 +61,7 @@ sub import {
     $self->export_to_level(1, $self, @EXPORT);
 }
 
-=head2 C<html_ok( [$lint, ] $html, $name )>
+=head2 html_ok( [$lint, ] $html, $name )
 
 Checks to see that C<$html> contains valid HTML. 
 
@@ -78,12 +78,18 @@ Otherwise, it will use the default rules.
 
     html_ok( $content, "Web page passes ALL tests" );
 
+Note that if you pass in your own HTML::Lint object, C<html_ok()>
+will clear its errors before using it.
+
 =cut
 
 sub html_ok {
     my $lint;
+
     if ( ref($_[0]) eq "HTML::Lint" ) {
 	$lint = shift;
+	$lint->newfile();
+	$lint->clear_errors();
     } else {
 	$lint = HTML::Lint->new;
     }

@@ -1,4 +1,4 @@
-# $Id: Makefile.PL,v 1.7 2003/09/02 22:25:18 petdance Exp $
+# $Id: Makefile.PL,v 1.8 2003/12/19 19:47:34 petdance Exp $
 use strict;
 use ExtUtils::MakeMaker;
 use File::Find;
@@ -41,5 +41,6 @@ EOF
 		COMPRESS => 'gzip -9f', 
 		SUFFIX => 'gz',
 		},
+	clean => { FILES => 'HTML-Lint-*' },
 	);
 

@@ -1,4 +1,4 @@
-# $Id: Error.pm,v 1.25 2003/09/12 01:23:32 petdance Exp $
+# $Id: Error.pm,v 1.28 2003/12/19 22:00:22 petdance Exp $
 package HTML::Lint::Error;
 
 use strict;
@@ -117,7 +117,7 @@ sub _expand_error {
     $self->{_errtext} = $str;
 }
 
-=head2 C<is_type( $type1 [, $type2 ] )>
+=head2 is_type( $type1 [, $type2 ] )
 
 Tells if any of I<$type1>, I<$type2>... match the error's type.
 Returns the type that matched.
@@ -130,21 +130,34 @@ sub is_type {
     my $self = shift;
 
     for my $matcher ( @_ ) {
-	return $matcher if $matcher eq $self->{_type};
+	return $matcher if $matcher eq $self->type;
     }
 
-    return undef;
+    return;
 }
 
-=head2 C<where()>
+=head2 where()
 
-Returns a formatted string that describes where in the file the error has occurred.
+Returns a formatted string that describes where in the file the
+error has occurred.
 
 For example,
 
     (14:23)
 
 for line 14, column 23.
+
+The terrible thing about this function is that it's both a plain
+ol' formatting function as in
+
+    my $str = where( 14, 23 );
+
+AND it's an object method, as in:
+
+    my $str = $error->where();
+
+I don't know what I was thinking when I set it up this way, but
+it's bad practice.
 
 =cut
 
@@ -157,13 +170,13 @@ sub where {
 	$col = shift;
     } else {
 	my $self = shift;
-	$line = $self->{_line};
-	$col = $self->{_column};
+	$line = $self->line;
+	$col = $self->column;
     }
     return sprintf( "(%s:%s)", $line, $col + 1 );
 }
 
-=head2 C<as_string()>
+=head2 as_string()
 
 Returns a nicely-formatted string for printing out to stdout or some similar user thing.
 

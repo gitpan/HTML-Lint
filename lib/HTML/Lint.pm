@@ -52,13 +52,13 @@ use vars qw( @ISA $VERSION );
 
 =head1 VERSION
 
-Version 1.24
+Version 1.25
 
-    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.57 2003/09/12 01:59:32 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.61 2003/12/19 22:00:22 petdance Exp $
 
 =cut
 
-$VERSION = '1.24';
+$VERSION = '1.25';
 
 =head1 EXPORTS
 
@@ -70,7 +70,7 @@ C<HTML::Lint> is based on the L<HTML::Parser> module.  Any method call that work
 C<HTML::Parser> will work in C<HTML::Lint>.  However, you'll probably only want to use
 the C<parse()> or C<parse_file()> methods.
 
-=head2 C<new()>
+=head2 new()
 
 Create an HTML::Lint object, which inherits from HTML::Parser.
 You may pass the types of errors you want to check for in the
@@ -117,7 +117,7 @@ sub new {
     return $self;
 }
 
-=head2 C<only_types( $type1[, $type2...] )>
+=head2 only_types( $type1[, $type2...] )
 
 Specifies to only want errors of a certain type.
 
@@ -137,7 +137,7 @@ sub only_types {
     $self->{_types} = [@_];
 }
 
-=head2 C<errors()>
+=head2 errors()
 
 In list context, C<errors> returns all of the errors found in the
 parsed text.  Each error is an object of the type L<HTML::Lint::Error>.
@@ -156,18 +156,33 @@ sub errors {
     }
 }
 
-=head2 C<clear_errors()>
+=head2 clear_errors()
 
 Clears the list of errors, in case you want to print and clear, print and clear.
 
 =cut
 
-sub clear_errors() {
+sub clear_errors {
     my $self = shift;
 
     $self->{_errors} = [];
 }
 
+=head2 gripe( $errcode, [$key1=>$val1, ...] )
+
+Adds an error message, in the form of an L<HTML::Lint::Error> object,
+to the list of error messages for the current object.  The file,
+line and column are automatically passed to the L<HTML::Lint::Error>
+constructor, as well as whatever other key value pairs are passed.
+
+For example:
+
+    $lint->gripe( 'attr-repeated', tag => $tag, attr => $attr );
+
+Usually, the user of the object won't call this directly, but just
+in case, here you go.
+
+=cut
 
 sub gripe {
     my $self = shift;
@@ -181,7 +196,7 @@ sub gripe {
     }
 }
 
-=head2 C<newfile( $filename )>
+=head2 newfile( $filename )
 
 Call C<newfile()> whenever you switch to another file in a batch of 
 linting.  Otherwise, the object thinks everything is from the same file.
@@ -189,33 +204,46 @@ Note that the list of errors is NOT cleared.
 
 =cut
 
-sub newfile($) {
+sub newfile {
     my $self = shift;
     my $file = shift;
 
     $self->{_file} = $file;
-    $self->line(0);
-    $self->column(0);
+    $self->{_line} = 0;
+    $self->{_column} = 0;
     $self->{_first_seen} = {};
 
     return $self->{_file};
 } # newfile
 
-sub file() {
-    my $self = shift;
-    return $self->{_file};
+=head2 file()
+
+Returns the current file being linted.
+
+=cut
+
+sub file {
+    return shift->{_file};
 }
 
-sub line($) {
-    my $self = shift;
-    $self->{_line} = shift if @_;
-    return $self->{_line};
+=head2 line()
+
+Returns the current line in the file.
+
+=cut
+
+sub line {
+    return shift->{_line};
 }
 
-sub column($) {
-    my $self = shift;
-    $self->{_column} = shift if @_;
-    return $self->{_column};
+=head2 column()
+
+Returns the current column in the file.
+
+=cut
+
+sub column {
+    return shift->{_column};
 }
 
 =pod
@@ -241,8 +269,9 @@ sub _end_document {
 
 sub _start {
     my ($self,$tag,$line,$column,@attr) = @_;
-    $self->line($line);
-    $self->column($column);
+
+    $self->{_line} = $line;
+    $self->{_column} = $column;
 
     my $validattr = $isKnownAttribute{ $tag };
     if ( $validattr ) {
@@ -296,8 +325,9 @@ sub _text {
 
 sub _end {
     my ($self,$tag,$line,$column,@attr) = @_;
-    $self->line($line);
-    $self->column($column);
+
+    $self->{_line} = $line;
+    $self->{_column} = $column;
 
     if ( $HTML::Tagset::emptyElement{ $tag } ) {
 	$self->gripe( 'elem-empty-but-closed', tag => $tag );
@@ -322,7 +352,6 @@ sub _end {
     }
 }
 
-sub _element_stack { my $self = shift; @{$self->{_stack}} }
 sub _element_push { 
     my $self = shift; 
     for ( @_ ) {
@@ -343,7 +372,7 @@ sub _find_tag_in_stack {
 	--$offset;
     } # while
 
-    return undef;
+    return;
 
 }
 
@@ -351,8 +380,7 @@ sub _element_pop_back_to {
     my $self = shift;
     my $tag = shift;
     
-    my $offset = $self->_find_tag_in_stack($tag);
-    return undef if not defined $offset;
+    my $offset = $self->_find_tag_in_stack($tag) or return;
 
     my @leftovers = splice( @{$self->{_stack}}, $offset + 1 );
     pop @{$self->{_stack}};

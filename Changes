@@ -1,5 +1,21 @@
-# $Id: Changes,v 1.46 2003/09/12 01:17:45 petdance Exp $
+# $Id: Changes,v 1.51 2003/12/19 21:34:58 petdance Exp $
 Revision history for Perl extension HTML::Lint and Test::HTML::Lint.
+
+1.25
+	[ENHANCEMENTS]
+	* html_ok() clears the HTML::Lint object that gets passed
+	  in, if any.  Thanks to Cees Hek.
+
+	[INTERNALS]
+	* Ran everything through Devel::Cover to see what wasn't
+	  getting exercised.
+	* Removed _element_stack() which was never used.
+	* Error.pm's internals now eat their own dog food of methods,
+	  rather than accessing internals directly.
+	* line(), column() and file() are no longer setters in
+	  HTML::Lint.  I sure hope this doesn't break anything for
+	  anyone.
+	* Removed some explicit "return undef" stuff.
 
 1.24	September 11, 2003
 	[FIXES]
