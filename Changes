@@ -1,5 +1,9 @@
-# $Id: Changes,v 1.11 2002/06/05 21:29:42 petdance Exp $
+# $Id: Changes,v 1.14 2002/07/04 04:18:52 petdance Exp $
 Revision history for Perl extension HTML::Lint.
+
+1.01    July 3, 2002
+	* Tests use isa_ok() for more stringent checking of return objects
+	* Added <nobr>.  Ooopsie.
 
 1.00	June 5, 2002
 	* weblint has a --context option to show the line that the error

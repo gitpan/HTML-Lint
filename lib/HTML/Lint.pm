@@ -43,19 +43,19 @@ use warnings;
 use HTML::Parser 3.20;
 use HTML::Tagset 3.03;
 use HTML::Lint::Error;
-use HTML::Lint::HTML4;
+use HTML::Lint::HTML4 qw( %isKnownAttribute %isRequired %isNonrepeatable %isObsolete );
 
 our @ISA = qw( HTML::Parser );
 
 =head1 VERSION
 
-Version 1.00
+Version 1.01
 
-    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.15 2002/06/05 21:29:43 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.23 2002/07/04 04:18:52 petdance Exp $
 
 =cut
 
-our $VERSION = '1.00';
+our $VERSION = '1.01';
 
 =head1 EXPORTS
 
@@ -313,6 +313,49 @@ sub _start_input {
     }
 }
 
+# This should not be run as an object method.
+sub _check_test_more {
+    eval "use Test::More no_plan";
+
+    my $self = new HTML::Lint;
+    isa_ok( $self, 'HTML::Lint', 'Created lint object' );
+    my @expected = @{+shift};
+    my @lines = @_;
+
+
+    $self->parse( $_ ) for @_;
+    $self->eof;
+
+    my @errors = $self->errors();
+    is( scalar @errors, scalar @expected, 'Right # of errors' );
+
+    while ( @errors && @expected ) {
+	my $error = shift @errors;
+	isa_ok( $error, 'HTML::Lint::Error' );
+
+	my $expected = shift @expected;
+
+	is( $error->errcode, $expected->[0] );
+	my $match = $expected->[1];
+	if ( ref $match eq "Regexp" ) {
+	    like( $error->as_string, $match );
+	} else {
+	    is( $error->as_string, $match );
+	}
+    }
+
+    my $dump;
+
+    is( scalar @errors, 0, 'No unexpected errors found' ) or $dump = 1;
+    is( scalar @expected, 0, 'No expected errors missing' ) or $dump = 1;
+
+    if ( $dump && @errors ) {
+	diag( "Leftover errors..." ); 
+	diag( $_->as_string ) for @errors;
+    }
+}
+
+
 =back
 
 =head1 SEE ALSO
@@ -347,6 +390,12 @@ that's a problem.  (Plus, that crashes IE OSX)
 =item * Check for valid entities, and that they end with semicolons
 
 =item * DIVs with nothing in them.
+
+=item * HEIGHT= that have percents in them.
+
+=item * Check for goofy stuff like:
+
+    <b><li></b><b>Hello Reader - Spanish Level 1 (K-3)</b>
 
 =back
 

@@ -1,4 +1,4 @@
-# $Id: Error.pm,v 1.6 2002/05/31 20:43:25 petdance Exp $
+# $Id: Error.pm,v 1.8 2002/06/10 20:37:08 petdance Exp $
 package HTML::Lint::Error;
 
 use 5.6.0;
@@ -164,7 +164,6 @@ Andy Lester, E<lt>andy@petdance.comE<gt>
     'elem-unopened' =>		'</${tag}> with no opening <${tag}>',
     'elem-unclosed' =>		'<${tag}> at ${where} is never closed',
 #elem-nested-element 		<${tag}> cannot be nested -- one is already opened at ${where}
-    'elem-overlap' => 		'</${tag}> seems to overlap <${othertag}> opened at ${where}',
     'elem-empty-but-closed' =>	'<${tag}> is not a container -- </${tag}> is not allowed',
 #elem-wrong-context		Illegal context for <${tag}> -- must appear in <${othertag}> tag.
 #elem-heading-in-anchor		<A> should be inside <${tag}>, not <${tag}> inside <A>
@@ -193,8 +192,6 @@ Andy Lester, E<lt>andy@petdance.comE<gt>
 #text-literal-metacharacter	Metacharacter $char should be represented as "$otherchar"
 #text-title-length		The HTML spec recommends that that <TITLE> be no more than 64 characters
 #text-markup			Tag <${tag}> found in the <TITLE>, which will not be rendered properly.
-
-    'file-cannot-open' =>	'File ${filename} can\'t be opened: ${error}',
 
 #elem-physical-markup		<${tag}> is physical font markup.  Use logical (such as <${othertag}>) instead.
 #elem-leading-whitespace	<${tag}> should not have whitespace between "<" and "${tag}>"

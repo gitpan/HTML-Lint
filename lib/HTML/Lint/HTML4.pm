@@ -1,4 +1,4 @@
-# $Id: HTML4.pm,v 1.3 2002/05/29 14:59:45 petdance Exp $
+# $Id: HTML4.pm,v 1.5 2002/07/04 04:08:44 petdance Exp $
 package HTML::Lint::HTML4;
 
 use 5.6.0;
@@ -6,7 +6,7 @@ use strict;
 use warnings;
 use base 'Exporter';
 
-our @EXPORT = qw( %isKnownAttribute %isRequired %isNonrepeatable %isObsolete );
+our @EXPORT_OK = qw( %isKnownAttribute %isRequired %isNonrepeatable %isObsolete );
 
 sub hash(@) { my %hash; $hash{$_} = 1 for @_; return \%hash; }
 
@@ -82,6 +82,7 @@ our %isKnownAttribute = (
     map		=> hash( @std, qw( name ) ),
     menu	=> hash( @std, qw( compact ) ),
     meta	=> hash( @i18n, qw( content http-equiv name scheme ) ),
+    nobr	=> hash( @std ),
     noframes	=> hash( @std ), 
     noscript	=> hash( @std ), 
     object	=> hash( @std, qw( align archive border classid codebase codetype data declare height hspace name standby tabindex type usemap vspace width )),
