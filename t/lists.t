@@ -10,8 +10,8 @@
 # $Id: lists.t,v 1.2 1999/03/24 21:14:59 neilb Exp $
 #
 
-use lib '/home/neilb/weblint/lib';
-use Weblint::Test qw(run_tests);
+use lib qw( . t/ );
+use LintTest qw(run_tests);
 use strict;
 
 run_tests();

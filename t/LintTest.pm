@@ -1,5 +1,5 @@
 #
-# HTML::Lint::Test - test harness for Weblint
+# LintTest - test harness for HTML::Lint's test scripts 
 #
 # Copyright (C) 1995-1999 Neil Bowers.	All rights reserved.
 #
@@ -7,7 +7,7 @@
 # Bugs, comments, suggestions welcome: neilb@weblint.org
 #
 
-package HTML::Lint::Test;
+package LintTest;
 require Exporter;
 
 use HTML::Lint;
@@ -39,8 +39,7 @@ my %switch;
 # quickly as possible. I'll fix it someday, honest.
 #
 #=======================================================================
-sub run_tests
-{
+sub run_tests {
 	my @args;
 	my $arg;
 	my $line;
@@ -64,35 +63,28 @@ sub run_tests
 	# and count the number of tests.
 	#-------------------------------------------------------------------
 	$slurp = <main::DATA>;
-	if (not defined $switch{verbose})
-	{
-	@bits = split(/\n#-----+/, $slurp);
-	pop @bits if $bits[-1] =~ /^\s*$/;
-	print "1..", int(@bits), "\n";
+	if (not defined $switch{verbose}) {
+		@bits = split(/\n#-----+/, $slurp);
+		pop @bits if $bits[-1] =~ /^\s*$/;
+		print "1..", int(@bits), "\n";
 	}
 
 	@bits = split(/\n/, $slurp);
-	while (@bits > 0)
-	{
+	while (@bits > 0) {
 	$_ = shift @bits;
 
 	#--------------------------------------------------------------------
 	# A line of dashes (minus characters) signify end of test
 	#--------------------------------------------------------------------
-	if (/^\#----/)
-	{
+	if (/^\#----/) {
 		push(@args, '') if @args == 0;
-		foreach $arg (@args)
-		{
-		if (@warns > 0)
-		{
-			&ExpectWARN($subject, $arg, $body, @warns);
-		}
-		else
-		{
-			&ExpectOK($subject, $arg, $body);
-		}
-		}
+		foreach $arg (@args) {
+			if (@warns > 0) {
+				&ExpectWARN($subject, $arg, $body, @warns);
+			} else {
+				&ExpectOK($subject, $arg, $body);
+			}
+		} # for
 
 		$subject = undef;
 		$body	 = '';
@@ -107,8 +99,7 @@ sub run_tests
 	#--------------------------------------------------------------------
 	# A line starting with 3 (FOUR) hashes (#) delimits the HTML test
 	#--------------------------------------------------------------------
-	if (/^\#\#\#\#/)
-	{
+	if (/^####/) {
 		$state = ($state eq 'start' || $state eq 'args') ? 'body' : 'end';
 
 		next;
@@ -117,28 +108,24 @@ sub run_tests
 	#--------------------------------------------------------------------
 	# In START state, we are about to read the subject line of the test
 	#--------------------------------------------------------------------
-	if ($state eq 'start')
-	{
+	if ($state eq 'start') {
 		$subject = $_;
 		$state	 = 'args';
 		next;
 	}
 
-	if ($state eq 'args')
-	{
+	if ($state eq 'args') {
 		$_ = '' if /^\s*<none>\s*$/io;
 		push(@args, $_);
 		next;
 	}
 
-	if ($state eq 'body')
-	{
+	if ($state eq 'body') {
 		$body .= "$_\n";
 		next;
 	}
 
-	if ($state eq 'end')
-	{
+	if ($state eq 'end') {
 		next if /^\s*$/;
 		($line, $id) = split(/:/, $_, 2);
 		push(@warns, $line, $id);
@@ -186,48 +173,37 @@ sub ExpectOK
 # Purpose:	A test which we expect weblint to complain about.
 #		We pass in one or more expected errors.
 #========================================================================
-sub ExpectWARN
-{
+sub ExpectWARN {
 	my $description = shift;
-	my $flags		= shift;
-	my $html		= shift;
+	my $flags	= shift;
+	my $html	= shift;
 	my @expected	= @_;
 
 	my @results;
 	my @notSeen;
-	my($i, $j);
-
 
 	&NextTest($description);
 	@results = &RunHTML::Lint($html, $flags);
 
-	if (@results == 0)
-	{
-	&TestFails($html);
-	return;
+	if (@results == 0) {
+		&TestFails($html);
+		return;
 	}
 
-	OUTER: for ($i=0; $i < $#expected; $i += 2)
-	{
-	INNER: for ($j = 0; $j < $#results; $j += 2)
-	{
-		if ($results[$j] == $expected[$i]
-		&& $results[$j+1] eq $expected[$i+1])
-		{
-		splice(@results, $j, 2);
-		next OUTER;
-		}
-	}
-	@notSeen = (@notSeen, $expected[$i], $expected[$i+1]);
-	}
+	OUTER: for ( my $i=0; $i < $#expected; $i += 2) {
+		INNER: for ( my $j = 0; $j < $#results; $j += 2) {
+			if ($results[$j] == $expected[$i] && $results[$j+1] eq $expected[$i+1]) {
+				splice(@results, $j, 2);
+				next OUTER;
+			} # if
+		} # INNER
+		@notSeen = (@notSeen, $expected[$i], $expected[$i+1]);
+	} # OUTER
 
-	if (@notSeen == 0 && @results == 0)
-	{
-	&TestPasses();
-	}
-	else
-	{
-	&TestFails($html, @results);
+	if (@notSeen == 0 && @results == 0) {
+		&TestPasses();
+	} else {
+		&TestFails($html, @results);
 	}
 }
 
@@ -237,26 +213,23 @@ sub ExpectWARN
 # Purpose:	This function runs weblint and parses the output.
 #		The results from weblint are passed back in an array.
 #========================================================================
-sub RunHTML::Lint
-{
+sub RunHTML::Lint {
 	my $html = shift;
 	my $flags = shift;
 
 	my @argv = split(/\s+/, $flags);
 	my $arg;
 
-
 	@messages = ();
 	$weblint->{msgs}->reset_defaults(); # ooh, don't look!
-	while (@argv > 0)
-	{
+	while (@argv > 0) {
 		$arg = shift @argv;
 		if ($arg eq '-pedantic') {
-		$weblint->pedantic();
-	} elsif ($arg eq '-e') {
-		$weblint->enable(shift(@argv), ENABLED);
-	}
-	}
+			$weblint->pedantic();
+		} elsif ($arg eq '-e') {
+			$weblint->enable(shift(@argv), ENABLED);
+		}
+	} # while
 	$weblint->check_string("test $testID", $html);
 
 	return @messages;
@@ -267,10 +240,8 @@ sub RunHTML::Lint
 # Function: HTML::LintTestInitialize()
 # Purpose:	Initialize global variables and open log file.
 #========================================================================
-sub HTML::LintTestInitialize
-{
+sub HTML::LintTestInitialize {
 	my $logname;
-
 
 	GetOptions(\%switch, 'verbose|v');
 
@@ -281,26 +252,25 @@ sub HTML::LintTestInitialize
 	$failCount = 0;
 	$passCount = 0;
 
-	if (defined $switch{'verbose'})
-	{
-	($logname = $0) =~ s!^.*/!!;
-	$logname .= '.log';
+	if (defined $switch{'verbose'}) {
+ 		($logname = $0) =~ s!^.*/!!;
+		$logname .= '.log';
 
-	print STDERR "LOG NAME = $logname\n";
+		print STDERR "LOG NAME = $logname\n";
 
-	open(LOGFILE, "> $logname") || die "Can't write logfile $logname: $!\n";
+		open(LOGFILE, "> $logname") || die "Can't write logfile $logname: $!\n";
 
-	print LOGFILE "HTML::Lint Testsuite:\n";
-	print LOGFILE "    HTML::Lint Version:   weblint v$Weblint::VERSION\n";
-	print LOGFILE "    Testsuite Version: $VERSION\n";
-	print LOGFILE '=' x 76, "\n";
+		print LOGFILE "HTML::Lint Testsuite:\n";
+		print LOGFILE "    HTML::Lint Version: weblint v$HTML::Lint::VERSION\n";
+		print LOGFILE "    Testsuite Version:  $VERSION\n";
+		print LOGFILE '=' x 76, "\n";
 
-	print STDERR "Running weblint testsuite:\n";
-	print STDERR "	  HTML::Lint Version:	 weblint v$Weblint::VERSION\n";
-	print STDERR "	  Testsuite Version: $VERSION\n";
-	print STDERR "	  Results Logfile:	 $logname\n";
-	print STDERR "Running test cases (. for pass, ! for failure):\n";
-	}
+		print STDERR "Running weblint testsuite:\n";
+		print STDERR "	  HTML::Lint Version: weblint v$HTML::Lint::VERSION\n";
+		print STDERR "	  Testsuite Version:  $VERSION\n";
+		print STDERR "	  Results Logfile:    $logname\n";
+		print STDERR "Running test cases (. for pass, ! for failure):\n";
+	} # if verbose
 }
 
 #========================================================================
@@ -310,26 +280,22 @@ sub HTML::LintTestInitialize
 #========================================================================
 sub HTML::LintTestEnd
 {
-	if (defined $switch{'verbose'})
-	{
-	print LOGFILE '=' x 76, "\n";
-	print LOGFILE "Number of Passes:   $passCount\n";
-	print LOGFILE "Number of Failures: $failCount\n";
-	close LOGFILE;
+	if (defined $switch{'verbose'}) {
+		print LOGFILE '=' x 76, "\n";
+		print LOGFILE "Number of Passes:   $passCount\n";
+		print LOGFILE "Number of Failures: $failCount\n";
+		close LOGFILE;
 
-	print STDERR "\n", '-' x 76, "\n";
-	if ($failCount > 0)
-	{
-		print STDERR "Failed tests:\n";
-		foreach my $failure (@failedTests)
-		{
-		print STDERR "	  $failure\n";
+		print STDERR "\n", '-' x 76, "\n";
+		if ($failCount > 0) {
+			print STDERR "Failed tests:\n";
+			foreach my $failure (@failedTests) {
+				print STDERR "	  $failure\n";
+			}
+			print STDERR '-' x 76, "\n";
 		}
-		print STDERR '-' x 76, "\n";
-
-	}
-	print STDERR "Number of Passes:   $passCount\n";
-	print STDERR "Number of Failures: $failCount\n";
+		print STDERR "Number of Passes:   $passCount\n";
+		print STDERR "Number of Failures: $failCount\n";
 	}
 }
 
@@ -338,15 +304,13 @@ sub HTML::LintTestEnd
 # Purpose:	Introduce a new test -- increment test id, write
 #		separator and test information to log file.
 #========================================================================
-sub NextTest
-{
+sub NextTest {
 	my $description = shift;
 
 
 	++$testID;
-	if (defined $switch{'verbose'})
-	{
-	print LOGFILE '-' x 76, "\n";
+	if (defined $switch{'verbose'})	{
+		print LOGFILE '-' x 76, "\n";
 	}
 	$testDescription = $description;
 }
@@ -356,19 +320,15 @@ sub NextTest
 # Purpose:	The current test passed.  Write result to logfile, and
 #		increment the count of successful tests.
 #========================================================================
-sub TestPasses
-{
-	if (defined $switch{'verbose'})
-	{
-	printf LOGFILE ("%3d %s%s%s", $testID, $testDescription,
+sub TestPasses {
+	if (defined $switch{'verbose'})	{
+		printf LOGFILE ("%3d %s%s%s", $testID, $testDescription,
 			' ' x (68 - length($testDescription)), "PASS\n");
-	# printf STDERR "%3d: pass (%s)\n", $testID, $testDescription;
-	print STDERR ".";
-	print STDERR "\n" if $testID % 70 == 0;
-	}
-	else
-	{
-	print "ok $testID\n";
+		# printf STDERR "%3d: pass (%s)\n", $testID, $testDescription;
+		print STDERR ".";
+		print STDERR "\n" if $testID % 70 == 0;
+	} else {
+		print "ok $testID\n";
 	}
 	++$passCount;
 }
@@ -381,40 +341,30 @@ sub TestPasses
 # including the html which failed, and the output from weblint.
 #
 #========================================================================
-sub TestFails
-{
-	my $html	= shift;
+sub TestFails {
+	my $html = shift;
 	my @results = @_;
 
-	my $string;
-	my $line;
-	my $wid;
-
-
 	# printf STDERR "%3d: FAIL (%s)\n", $testID, $testDescription;
-	$string = sprintf("%3d: %s", $testID, $testDescription);
+	my $string = sprintf("%3d: %s", $testID, $testDescription);
 	push(@failedTests, $string);
-	if (defined $switch{'verbose'})
-	{
-	print STDERR "!";
-	print STDERR "\n" if $testID % 70 == 0;
+	if (defined $switch{'verbose'})	{
+		print STDERR "!";
+		print STDERR "\n" if $testID % 70 == 0;
 
-	printf LOGFILE ("%3d %s%s%s", $testID, $testDescription,
+		printf LOGFILE ("%3d %s%s%s", $testID, $testDescription,
 			' ' x (68 - length($testDescription)), "FAIL\n");
 
-	$html =~ s/\n/\n	/g;
-	print LOGFILE "\n  HTML:\n	  $html\n\n";
-	print LOGFILE "  WEBLINT OUTPUT:\n";
-	while (@results > 1)
-	{
-		($line, $wid) = splice(@results, 0, 2);
-		print LOGFILE "    line $line: $wid\n";
-	}
-	print LOGFILE "\n";
-	}
-	else
-	{
-	print "not ok $testID\n";
+		$html =~ s/\n/\n	/g;
+		print LOGFILE "\n  HTML:\n	  $html\n\n";
+		print LOGFILE "  WEBLINT OUTPUT:\n";
+		while (@results > 1) {
+			my ($line, $wid) = splice(@results, 0, 2);
+			print LOGFILE "    line $line: $wid\n";
+		}
+		print LOGFILE "\n";
+	} else {
+		print "not ok $testID\n";
 	}
 	++$failCount;
 }
@@ -430,9 +380,9 @@ sub TestFails
 sub my_handler
 {
 	my $filename = shift;
-	my $line	 = shift;
-	my $id		 = shift;
-	my @argv	 = @_;
+	my $line = shift;
+	my $id	 = shift;
+	my @argv = @_;
 
 
 	push(@messages, $line, $id);
@@ -446,11 +396,12 @@ __END__
 
 =head1 NAME
 
-HTML::Lint::Test - test harness for weblint tests
+LintTest - test harness for HTML::Lint tests
 
 =head1 SYNOPSIS
 
-	use HTML::Lint::Test qw(run_tests);
+	use lib qw( . t/ );
+	use LintTest qw(run_tests);
 	
 	run_tests();
 	exit 0;
@@ -460,7 +411,7 @@ HTML::Lint::Test - test harness for weblint tests
 
 =head1 DESCRIPTION
 
-B<HTML::Lint::Test> is a module which provides the test harness for
+B<LintTest> is a module which provides the test harness for
 the testsuites which are included in the weblint distribution.
 This provides a simple format for tests, as described in
 the section L<TEST FORMAT> below.
@@ -469,14 +420,6 @@ the section L<TEST FORMAT> below.
 
 Test data is provided in the DATA section of the test script;
 this is everything after the magic __END__ symbol.
-
-=head1 SEE ALSO
-
-=over 4
-
-=item HTML::Lint
-
-=back
 
 =head1 AUTHOR
 

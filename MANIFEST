@@ -1,15 +1,14 @@
 MANIFEST
 README
 Changes
-Changes-Neil
 Makefile.PL
 lib/HTML/Lint.pm
-lib/HTML/Lint/Test.pm
 lib/HTML/Lint/Constants.pm
 lib/HTML/Lint/Messages.pm
 lib/HTML/Lint/HTML4.pm
 pl/weblint
 pl/weblint-cgi
+t/LintTest.pm
 t/font.t
 t/form.t
 t/head.t

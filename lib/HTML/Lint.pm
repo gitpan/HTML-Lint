@@ -11,7 +11,7 @@ use HTML::Lint::Messages;
 use HTML::Lint::HTML4;
 use IO::File;
 
-$HTML::Lint::VERSION = "0.02";
+$HTML::Lint::VERSION = "0.03";
 
 sub new {
 	my $class = shift;

@@ -2,9 +2,7 @@ use strict;
 use ExtUtils::MakeMaker;
 use File::Find;
 
-my @libdirs = qw( lib/ );
-
-find( \&filecheck, @libdirs );
+find( \&filecheck, "." );
 
 sub filecheck {
 	unlink if /~$/;	# Remove any vi backup files
@@ -16,7 +14,7 @@ sub filecheck {
 	DISTNAME	=> 'HTML-Lint',
 	VERSION_FROM	=> 'lib/HTML/Lint.pm',
 	ABSTRACT_FROM	=> 'lib/HTML/Lint.pm',
-	PMLIBDIRS	=> [@libdirs],
+	PMLIBDIRS	=> [qw(lib/)],
 	AUTHOR		=> 'Andy Lester <andy@petdance.com>',
 	PREREQ_PM	=> {
 		'Getopt::Long'   => 0,
@@ -28,3 +26,4 @@ sub filecheck {
 		SUFFIX => 'gz',
 		},
 	);
+

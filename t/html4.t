@@ -10,8 +10,8 @@
 # $Id: html4.t,v 1.4 1999/04/05 17:00:08 neilb Exp $
 #
 
-use lib '/home/neilb/weblint/lib';
-use Weblint::Test qw(run_tests);
+use lib qw( . t/ );
+use LintTest qw(run_tests);
 use strict;
 
 run_tests();
@@ -496,6 +496,7 @@ Hello, <BOB SIZE="+1">World!</BOB>
 ####
 4:unknown-element
 4:unknown-element
+4:illegal-closing
 #------------------------------------------------------------------------
 legal attributes on BODY element
 ####

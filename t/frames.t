@@ -10,8 +10,8 @@
 # $Id: frames.t,v 1.2 1999/04/06 21:17:24 neilb Exp $
 #
 
-use lib '/home/neilb/weblint/lib';
-use Weblint::Test qw(run_tests);
+use lib qw( . t/ );
+use LintTest qw(run_tests);
 use strict;
 
 run_tests();

@@ -10,8 +10,8 @@
 # $Id: i18n.t,v 1.3 1999/04/05 16:04:22 neilb Exp $
 #
 
-use lib '/home/neilb/weblint/lib';
-use Weblint::Test qw(run_tests);
+use lib qw( . t/ );
+use LintTest qw(run_tests);
 use strict;
 
 run_tests();
