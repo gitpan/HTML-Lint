@@ -1,5 +1,9 @@
-# $Id: Changes,v 1.6 2002/05/29 14:50:29 petdance Exp $
+# $Id: Changes,v 1.7 2002/05/31 20:43:24 petdance Exp $
 Revision history for Perl extension HTML::Lint.
+
+0.94	May 31, 2002
+	* Moved the %HTML::Lint::Error::errors hash to be a package
+	variable, and not initialize it in an INIT block.
 
 0.93	May 28, 2002	
 	* weblint can now read URLs as well as files

@@ -1,9 +1,7 @@
 #!/usr/bin/perl -wT
-# $Id: weblint,v 1.5 2002/05/29 15:09:59 petdance Exp $
+# $Id: weblint,v 1.6 2002/05/31 19:15:01 petdance Exp $
 
 use strict;
-
-use lib qw( /home/alester/html-lint/lib );
 
 use HTML::Lint;
 use HTML::Lint::HTML4;
@@ -39,8 +37,9 @@ for my $url ( @ARGV ) {
 	$lint->eof();
 	close $fh;
     }
+    for my $error ( $lint->errors() ) {
+	print $error->as_string(), "\n";
+    }
+    $lint->clear_errors();
 } # for files
 
-for my $error ( $lint->errors() ) {
-    print $error->as_string(), "\n";
-}

@@ -32,13 +32,13 @@ our @ISA = qw( HTML::Parser );
 
 =head1 VERSION
 
-Version 0.93
+Version 0.94
 
-    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.8 2002/05/21 02:29:47 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.10 2002/05/31 20:43:25 petdance Exp $
 
 =cut
 
-our $VERSION = '0.93';
+our $VERSION = '0.94';
 
 =head1 EXPORTS
 
@@ -95,6 +95,19 @@ sub errors {
 	return scalar @{$self->{_errors}};
     }
 }
+
+=item clear_errors()
+
+Clears the list of errors, in case you want to print and clear, print and clear.
+
+=cut
+
+sub clear_errors() {
+    my $self = shift;
+
+    $self->{_errors} = [];
+}
+
 
 sub gripe {
     my $self = shift;

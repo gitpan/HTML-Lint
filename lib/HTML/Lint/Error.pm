@@ -1,4 +1,4 @@
-# $Id: Error.pm,v 1.5 2002/05/29 14:59:59 petdance Exp $
+# $Id: Error.pm,v 1.6 2002/05/31 20:43:25 petdance Exp $
 package HTML::Lint::Error;
 
 use 5.6.0;
@@ -51,17 +51,6 @@ sub new {
 }
 
 our %errors;
-INIT {
-    while (<DATA>) {
-	chomp;
-	next if /^\s*#/;
-	next if /^$/;
-
-	my ($name,$text) = split( /\s+/, $_, 2 );
-	$errors{$name} = $text;
-    } # while
-}
-
 
 sub _expand_error {
     my $errcode = shift;
@@ -163,38 +152,37 @@ Andy Lester, E<lt>andy@petdance.comE<gt>
 =cut
 
 
-1; # happy
-
-__DATA__
 # Errors that are commented out have not yet been implemented.
 
 # Generic element stuff
+%errors = (
 #elem-head-only			<${tag}> can only appear in the <HEAD> element
-elem-unknown 			Unknown element <${tag}> 
-#elem-nonrepeatable 		Element <${tag}> is non-repeatable, but already showed up at line ${n} 
-#elem-non-head-element 		<${tag}> cannot appear in the <HEAD> element 
-#elem-obsolete 			<${tag}> is obsolete 
-elem-unopened 			</${tag}> with no opening <${tag}> 
-elem-unclosed 			<${tag}> at ${where} is never closed 
+    'elem-unknown' =>		'Unknown element <${tag}>',
+#elem-nonrepeatable 		Element <${tag}> is non-repeatable, but already showed up at line ${n}
+#elem-non-head-element 		<${tag}> cannot appear in the <HEAD> element
+#elem-obsolete 			<${tag}> is obsolete
+    'elem-unopened' =>		'</${tag}> with no opening <${tag}>',
+    'elem-unclosed' =>		'<${tag}> at ${where} is never closed',
 #elem-nested-element 		<${tag}> cannot be nested -- one is already opened at ${where}
-$elem-overlap 			</${tag}> seems to overlap <${othertag}> opened at ${where}
-elem-empty-but-closed 		<${tag}> is not a container -- </${tag}> is not allowed 
+    'elem-overlap' => 		'</${tag}> seems to overlap <${othertag}> opened at ${where}',
+    'elem-empty-but-closed' =>	'<${tag}> is not a container -- </${tag}> is not allowed',
 #elem-wrong-context		Illegal context for <${tag}> -- must appear in <${othertag}> tag.
 #elem-heading-in-anchor		<A> should be inside <${tag}>, not <${tag}> inside <A>
-elem-input-image-sizes-missing	<INPUT TYPE="image"> can benefit from HEIGHT and WIDTH, like an IMG tag.
-elem-input-not-sizable		<INPUT> tag cannot have HEIGHT and WIDTH unless TYPE="image"
+    'elem-input-image-sizes-missing' =>
+				'<INPUT TYPE="image"> can benefit from HEIGHT and WIDTH, like an IMG tag.',
+    'elem-input-not-sizable' => '<INPUT> tag cannot have HEIGHT and WIDTH unless TYPE="image"',
 
 # HEAD-specific
 #elem-head-missing		No <HEAD> element found
 #elem-head-missing-title 	No <TITLE> in <HEAD> element
 
 # IMG-specific
-elem-img-sizes-missing		<IMG> tag has no HEIGHT and WIDTH attributes.
+    'elem-img-sizes-missing' =>	'<IMG> tag has no HEIGHT and WIDTH attributes.',
 #elem-img-sizes-incorrect	<IMG> tag's HEIGHT and WIDTH attributes are incorrect.  They should be ${correct}.
-elem-img-alt-missing		<IMG> does not have ALT text defined
+    'elem-img-alt-missing' =>   '<IMG> does not have ALT text defined',
 
-attr-repeated 			${attr} attribute in <${tag}> is repeated
-attr-unknown 			Unknown attribute "${attr}" for tag <${tag}>
+    'attr-repeated' =>		'${attr} attribute in <${tag}> is repeated',
+    'attr-unknown' =>		'Unknown attribute "${attr}" for tag <${tag}>',
 #attr-missing 			<${tag}> is missing a "${attr}" attribute
 #attr-closing-tag		Closing tag </${tag}> should not have any attributes.
 
@@ -206,7 +194,7 @@ attr-unknown 			Unknown attribute "${attr}" for tag <${tag}>
 #text-title-length		The HTML spec recommends that that <TITLE> be no more than 64 characters
 #text-markup			Tag <${tag}> found in the <TITLE>, which will not be rendered properly.
 
-file-cannot-open		File ${filename} can't be opened: ${error}
+    'file-cannot-open' =>	'File ${filename} can\'t be opened: ${error}',
 
 #elem-physical-markup		<${tag}> is physical font markup.  Use logical (such as <${othertag}>) instead.
 #elem-leading-whitespace	<${tag}> should not have whitespace between "<" and "${tag}>"
@@ -221,3 +209,6 @@ file-cannot-open		File ${filename} can't be opened: ${error}
 # 'meta-in-pre' => [ ENABLED, MC_ERROR, 'you should use "$argv[0]" in place of "$argv[1]", even in a PRE element.', ],
 #  'implied-element' => [ ENABLED, MC_WARNING, 'saw <$argv[0]> element, but no <$argv[1]> element', ],
 #  'button-usemap' => [ ENABLED, MC_ERROR, 'illegal to associate an image map with IMG inside a BUTTON', ],
+);
+
+1; # happy
