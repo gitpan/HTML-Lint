@@ -1,23 +1,26 @@
 package Test::HTML::Lint;
 
 use strict;
-use warnings;
+eval 'use warnings' if $] >= 5.006;
+
 use Test::Builder;
 use Exporter;
 
-use HTML::Lint 1.13;
+use HTML::Lint 1.20;
 
-our @ISA = qw( HTML::Parser Exporter );
+use vars qw( @ISA $VERSION @EXPORT );
+
+@ISA = qw( HTML::Parser Exporter );
 
 =head1 VERSION
 
 Version 1.12
 
-    $Header: /cvsroot/html-lint/html-lint/lib/Test/HTML/Lint.pm,v 1.12 2002/08/08 02:19:51 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/Test/HTML/Lint.pm,v 1.14 2002/08/22 21:57:57 petdance Exp $
 
 =cut
 
-our $VERSION = '1.13';
+$VERSION = '1.20';
 
 my $Tester = Test::Builder->new;
 
@@ -48,7 +51,7 @@ C<html_ok>
 
 =cut
 
-our @EXPORT = qw( html_ok );
+@EXPORT = qw( html_ok );
 
 
 =head2 C<html_ok( [$lint, ] $html, $name )>

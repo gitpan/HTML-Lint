@@ -1,8 +1,10 @@
-# $Id: Error.pm,v 1.17 2002/08/05 21:59:56 petdance Exp $
+# $Id: Error.pm,v 1.19 2002/08/22 21:57:57 petdance Exp $
 package HTML::Lint::Error;
 
 use strict;
-use warnings;
+eval 'use warnings' if $] >= 5.006;
+
+use vars qw( %errors );
 
 =head1 NAME
 
@@ -84,8 +86,6 @@ sub new {
 
     return $self;
 }
-
-our %errors;
 
 sub _expand_error {
     my $self = shift;

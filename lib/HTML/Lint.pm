@@ -37,7 +37,7 @@ code through HTML::Lint and get it dumped into your Apache F<error_log>.
 =cut
 
 use strict;
-use warnings;
+eval 'use warnings' if $] >= 5.006;
 
 use HTML::Parser 3.20;
 use HTML::Tagset 3.03;
@@ -45,17 +45,19 @@ use HTML::Lint::Error;
 use HTML::Lint::HTML4 qw( %isKnownAttribute %isRequired %isNonrepeatable %isObsolete );
 use HTML::Entities qw( %char2entity );
 
-our @ISA = qw( HTML::Parser );
+use vars qw( @ISA $VERSION );
+
+@ISA = qw( HTML::Parser );
 
 =head1 VERSION
 
-Version 1.13
+Version 1.20
 
-    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.37 2002/08/05 22:07:38 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.41 2002/08/22 21:57:55 petdance Exp $
 
 =cut
 
-our $VERSION = '1.13';
+$VERSION = '1.20';
 
 =head1 EXPORTS
 
@@ -64,7 +66,7 @@ None.  It's all object-based.
 =head1 METHODS
 
 C<HTML::Lint> is based on the L<HTML::Parser> module.  Any method call that works with 
-C<HTML::Parser> will work in <HTML::Lint>.  However, you'll probably only want to use
+C<HTML::Parser> will work in C<HTML::Lint>.  However, you'll probably only want to use
 the C<parse()> or C<parse_file()> methods.
 
 =head2 C<new()>
@@ -101,7 +103,7 @@ Specifies to only want errors of a certain type.
 
     $lint->only_types( HTML::Lint::Error::STRUCTURE );
 
-Calling this without parameters accepts all error types.
+Calling this without parameters makes the object return all possible errors.
 
 =cut
 
@@ -343,7 +345,7 @@ sub _start_input {
 
 # This should not be run as an object method.
 sub _check_test_more {
-    eval "use Test::More no_plan";
+    eval "use Test::More 'no_plan'";
 
     my $self = new HTML::Lint;
     isa_ok( $self, 'HTML::Lint', 'Created lint object' );

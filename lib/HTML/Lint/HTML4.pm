@@ -1,31 +1,39 @@
-# $Id: HTML4.pm,v 1.6 2002/07/15 19:19:20 petdance Exp $
+# $Id: HTML4.pm,v 1.8 2002/08/22 21:57:57 petdance Exp $
 package HTML::Lint::HTML4;
 
 use strict;
-use warnings;
+eval 'use warnings' if $] >= 5.006;
+
 use base 'Exporter';
 
-our @EXPORT_OK = qw( %isKnownAttribute %isRequired %isNonrepeatable %isObsolete );
+use vars qw(
+    @EXPORT_OK 
+    @physical @content @core @i18n @events @std
+    %isRequired %isNonrepeatable %isObsolete
+    %isKnownAttribute
+);
+
+@EXPORT_OK = qw( %isKnownAttribute %isRequired %isNonrepeatable %isObsolete );
 
 sub hash(@) { my %hash; $hash{$_} = 1 for @_; return \%hash; }
 
-our @physical	= qw( b big code i kbd s small strike sub sup tt u xmp );
-our @content	= qw( abbr acronym cite code dfn em kbd samp strong var );
+@physical	= qw( b big code i kbd s small strike sub sup tt u xmp );
+@content	= qw( abbr acronym cite code dfn em kbd samp strong var );
 
-our @core	= qw( class id style title );
-our @i18n	= qw( dir lang );
-our @events	= qw( onclick ondblclick onkeydown onkeypress onkeyup onmousedown onmousemove onmouseout onmouseover onmouseup );
-our @std	= (@core,@i18n,@events);
+@core	= qw( class id style title );
+@i18n	= qw( dir lang );
+@events	= qw( onclick ondblclick onkeydown onkeypress onkeyup onmousedown onmousemove onmouseout onmouseover onmouseup );
+@std	= (@core,@i18n,@events);
 
-our %isRequired = %{hash( qw( body head title ) )};
-our %isNonrepeatable = %isRequired;
-our %isObsolete	=> hash( qw( listing plaintext xmp ) );
+%isRequired = %{hash( qw( body head title ) )};
+%isNonrepeatable = %isRequired;
+%isObsolete	= %{hash( qw( listing plaintext xmp ) )};
 
 # Some day I might do something with these.  For now, they're just comments.
 sub ie_only { return @_ };
 sub ns_only { return @_ };
 
-our %isKnownAttribute = (
+%isKnownAttribute = (
     # All the physical markup has the same
     (map { $_=>hash(@std) } (@physical, @content) ),
 
