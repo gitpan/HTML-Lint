@@ -1,11 +1,6 @@
+#!perl -Tw
+
 use Test::More;
-my $tpc = "Test::Pod::Coverage 0.06";
-eval "use $tpc";
-plan skip_all => "$tpc required for testing POD coverage" if $@;
-
-plan tests=>4;
-
-pod_coverage_ok( "HTML::Lint" );
-pod_coverage_ok( "HTML::Lint::HTML4" );
-pod_coverage_ok( "HTML::Lint::Error" );
-pod_coverage_ok( "Test::HTML::Lint" );
+eval "use Test::Pod::Coverage 1.04";
+plan skip_all => "Test::Pod::Coverage 1.04 required for testing POD coverage" if $@;
+all_pod_coverage_ok();

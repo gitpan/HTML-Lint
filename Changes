@@ -1,9 +1,16 @@
 # $Id: Changes,v 1.55 2004/01/27 23:15:34 petdance Exp $
 Revision history for Perl extension HTML::Lint and Test::HTML::Lint.
 
+        [ENHANCEMENTS]
+        * Added handling for <HTML xmlns=... xml:lang=...>
+
+        * Fixed <EMBED pluginspace=...>
+
+        * Added handling of <EMBED quality=... and play=...>
+
 1.28    January 27, 2004
-	[ENHANCEMENTS]
-	* Added support for the <EMBED> tag.
+        [ENHANCEMENTS]
+        * Added support for the <EMBED> tag.
 
         [INTERNALS]
         * Added more POD coverage.

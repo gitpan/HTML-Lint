@@ -6,14 +6,12 @@ HTML::Lint - check for HTML errors in a string or file
 
 =head1 VERSION
 
-Version 1.28
-
-    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.63 2004/01/27 23:15:34 petdance Exp $
+Version 1.30
 
 =cut
 
 use vars '$VERSION';
-$VERSION = '1.28';
+$VERSION = '1.30';
 
 =head1 SYNOPSIS
 
@@ -26,7 +24,7 @@ $VERSION = '1.28';
     my $error_count = $lint->errors;
 
     foreach my $error ( $lint->errors ) {
-	print $error->as_string, "\n";
+        print $error->as_string, "\n";
     }
 
 HTML::Lint also comes with a wrapper program called F<weblint> that handles

@@ -30,10 +30,12 @@ t/elem-nonrepeatable.t
 t/elem-unclosed.t
 t/elem-unknown.t
 t/elem-unopened.t
+t/embed-extensions.t
 t/pod.t
 t/pod-coverage.t
 t/random-nobr.t
 t/text-use-entity.t
+t/xhtml-html.t
 weblint-original/Announce
 weblint-original/Artistic
 weblint-original/ChangeLog
