@@ -1,4 +1,4 @@
-# $Id: MANIFEST,v 1.12 2003/09/02 22:21:48 petdance Exp $
+# $Id: MANIFEST,v 1.16 2003/09/12 01:59:32 petdance Exp $
 Changes
 MANIFEST
 Makefile.PL
@@ -9,6 +9,7 @@ lib/HTML/Lint/HTML4.pm
 lib/Test/HTML/Lint.pm
 pl/weblint
 pl/weblint-cgi
+t/LintTest.pl
 t/00.load.t
 t/01.coverage.t
 t/02.versions.t
@@ -17,6 +18,7 @@ t/11.test-html-lint-overload.t
 t/20.error-types-export.t
 t/20.error-types-skip.t
 t/20.error-types.t
+t/30.test-builder.t
 t/99.pod.t
 t/attr-repeated.t
 t/attr-unknown.t
@@ -24,8 +26,6 @@ t/doc-tag-required.t
 t/elem-empty-but-closed.t
 t/elem-img-alt-missing.t
 t/elem-img-sizes-missing.t
-t/elem-input-image-sizes-missing.t
-t/elem-input-not-sizable.t
 t/elem-nonrepeatable.t
 t/elem-unclosed.t
 t/elem-unknown.t

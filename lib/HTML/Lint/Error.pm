@@ -1,4 +1,4 @@
-# $Id: Error.pm,v 1.24 2003/09/02 19:20:24 petdance Exp $
+# $Id: Error.pm,v 1.25 2003/09/12 01:23:32 petdance Exp $
 package HTML::Lint::Error;
 
 use strict;
@@ -235,9 +235,6 @@ Andy Lester, E<lt>andy@petdance.comE<gt>
     'elem-unopened' =>		['</${tag}> with no opening <${tag}>', STRUCTURE],
     'elem-unclosed' =>		['<${tag}> at ${where} is never closed', STRUCTURE],
     'elem-empty-but-closed' =>	['<${tag}> is not a container -- </${tag}> is not allowed', STRUCTURE],
-    'elem-input-image-sizes-missing' =>
-				['<INPUT TYPE="image"> can benefit from HEIGHT and WIDTH, like an IMG tag.', HELPER],
-    'elem-input-not-sizable' => ['<INPUT> tag cannot have HEIGHT and WIDTH unless TYPE="image"', STRUCTURE],
 
     'elem-img-sizes-missing' =>	['<IMG> tag has no HEIGHT and WIDTH attributes.', HELPER],
     'elem-img-alt-missing' =>   ['<IMG> does not have ALT text defined', HELPER],

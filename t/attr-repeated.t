@@ -1,7 +1,7 @@
 use strict;
-use HTML::Lint;
+require 't/LintTest.pl';
 
-HTML::Lint::_check_test_more( [
+checkit( [
     [ 'attr-repeated' => qr/ALIGN attribute in <P> is repeated/i ],
 ], <DATA> );
     

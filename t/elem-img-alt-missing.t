@@ -1,7 +1,7 @@
 use strict;
-use HTML::Lint;
+require 't/LintTest.pl';
 
-HTML::Lint::_check_test_more( [
+checkit( [
     [ 'elem-img-alt-missing' => qr/<IMG> does not have ALT text defined/i ],
 ], <DATA> );
     

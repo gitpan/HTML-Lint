@@ -1,7 +1,7 @@
 use strict;
-use HTML::Lint;
+require 't/LintTest.pl';
 
-HTML::Lint::_check_test_more( [
+checkit( [
     [ 'attr-unknown' => qr/Unknown attribute "FOOD" for tag <P>/i ],
     [ 'attr-unknown' => qr/Unknown attribute "Yummy" for tag <I>/i ],
 ], <DATA> );

@@ -1,7 +1,7 @@
 use strict;
-use HTML::Lint;
+require 't/LintTest.pl';
 
-HTML::Lint::_check_test_more( [
+checkit( [
     [ 'elem-unknown' => qr/unknown element <donky>/i ],
     [ 'elem-unclosed' => qr/<donky> at \(\d+:\d+\) is never closed/i ],
 ], <DATA> );

@@ -1,7 +1,7 @@
 use strict;
-use HTML::Lint;
+require 't/LintTest.pl';
 
-HTML::Lint::_check_test_more( [
+checkit( [
     [ 'elem-img-sizes-missing' => qr/<IMG> tag has no HEIGHT and WIDTH attributes./i ],
 ], <DATA> );
     

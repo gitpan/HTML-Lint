@@ -1,4 +1,4 @@
-# $Id: HTML4.pm,v 1.12 2003/06/10 15:23:27 petdance Exp $
+# $Id: HTML4.pm,v 1.13 2003/09/12 01:17:45 petdance Exp $
 package HTML::Lint::HTML4;
 
 use strict;
@@ -77,7 +77,7 @@ sub ns_only { return @_ };
     html	=> hash( @i18n, qw( version )),
     iframe	=> hash( @core, qw( align frameborder height longdesc marginheight marginwidth name scrolling src width ) ),
     img		=> hash( @std, qw( align alt border height hspace ismap longdesc name src usemap vspace width ) ),
-    input 	=> hash( @std, qw( accept accesskey align alt border checked disabled height width maxlength name onblur onchange onfocus onselect readonly size src tabindex type usemap value ) ),
+    input 	=> hash( @std, qw( accept accesskey align alt border checked disabled maxlength name onblur onchange onfocus onselect readonly size src tabindex type usemap value ) ),
     ins		=> hash( @std, qw( cite datetime ) ),
     isindex	=> hash( @core, @i18n, qw( prompt ) ),
     label 	=> hash( @std, qw( accesskey for onblur onfocus ) ),

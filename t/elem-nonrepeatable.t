@@ -1,7 +1,7 @@
 use strict;
-use HTML::Lint;
+require 't/LintTest.pl';
 
-HTML::Lint::_check_test_more( [
+checkit( [
     [ 'elem-nonrepeatable' => qr/<title> is not repeatable, but already appeared at \(3:2\)/i ],
 ], <DATA> );
     

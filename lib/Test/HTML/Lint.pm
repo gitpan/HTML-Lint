@@ -5,7 +5,7 @@ use strict;
 use Test::Builder;
 use Exporter;
 
-use HTML::Lint 1.23;
+use HTML::Lint 1.24;
 
 use vars qw( @ISA $VERSION @EXPORT );
 
@@ -15,11 +15,11 @@ use vars qw( @ISA $VERSION @EXPORT );
 
 Version 1.23
 
-    $Header: /cvsroot/html-lint/html-lint/lib/Test/HTML/Lint.pm,v 1.22 2003/09/02 22:19:44 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/Test/HTML/Lint.pm,v 1.23 2003/09/12 01:38:32 petdance Exp $
 
 =cut
 
-$VERSION = '1.23';
+$VERSION = '1.24';
 
 my $Tester = Test::Builder->new;
 

@@ -1,7 +1,7 @@
 use strict;
-use HTML::Lint;
+require 't/LintTest.pl';
 
-HTML::Lint::_check_test_more( [
+checkit( [
     [ 'elem-empty-but-closed' => qr/<hr> is not a container -- <\/hr> is not allowed/ ],
 ], <DATA> );
     

@@ -52,13 +52,13 @@ use vars qw( @ISA $VERSION );
 
 =head1 VERSION
 
-Version 1.23
+Version 1.24
 
-    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.54 2003/09/02 22:19:44 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.57 2003/09/12 01:59:32 petdance Exp $
 
 =cut
 
-$VERSION = '1.23';
+$VERSION = '1.24';
 
 =head1 EXPORTS
 
@@ -380,67 +380,6 @@ sub _start_img {
     }
     if ( not defined $attr{alt} ) {
 	$self->gripe( "elem-img-alt-missing" );
-    }
-}
-
-sub _start_input {
-    my ($self,$tag,%attr) = @_;
-
-    my $is_button = (lc $attr{type} eq "image");
-    my ($h,$w) = @attr{qw( height width )};
-
-    if ( $is_button ) {
-	if ( defined $h && defined $w ) {
-	    # Check sizes (same as in img tag)
-	} else {
-	    $self->gripe( "elem-input-image-sizes-missing" );
-	}
-    } else {
-	if ( defined $h || defined $w ) {
-	    $self->gripe( "elem-input-not-sizable" );
-	}
-    }
-}
-
-# This should not be run as an object method.
-sub _check_test_more {
-    eval "use Test::More 'no_plan'";
-
-    my $self = new HTML::Lint;
-    isa_ok( $self, 'HTML::Lint', 'Created lint object' );
-    my @expected = @{+shift};
-    my @lines = @_;
-
-
-    $self->parse( $_ ) for @_;
-    $self->eof;
-
-    my @errors = $self->errors();
-    is( scalar @errors, scalar @expected, 'Right # of errors' );
-
-    while ( @errors && @expected ) {
-	my $error = shift @errors;
-	isa_ok( $error, 'HTML::Lint::Error' );
-
-	my $expected = shift @expected;
-
-	is( $error->errcode, $expected->[0] );
-	my $match = $expected->[1];
-	if ( ref $match eq "Regexp" ) {
-	    like( $error->as_string, $match );
-	} else {
-	    is( $error->as_string, $match );
-	}
-    }
-
-    my $dump;
-
-    is( scalar @errors, 0, 'No unexpected errors found' ) or $dump = 1;
-    is( scalar @expected, 0, 'No expected errors missing' ) or $dump = 1;
-
-    if ( $dump && @errors ) {
-	diag( "Leftover errors..." ); 
-	diag( $_->as_string ) for @errors;
     }
 }
 

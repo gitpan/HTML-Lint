@@ -1,7 +1,7 @@
 use strict;
-use HTML::Lint;
+require 't/LintTest.pl';
 
-HTML::Lint::_check_test_more( [
+checkit( [
     [ 'doc-tag-required' => qr/<html> tag is required/ ],
 ], <DATA> );
     
