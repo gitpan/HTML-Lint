@@ -1,0 +1,11 @@
+Revision history for Perl extension HTML::Lint.
+
+0.02  Sun May 14 13:42:00 2001
+	- Packaged and bundled with new namespace
+	- First upload to CPAN
+	
+0.01  Fri Apr 20 18:05:25 2001
+	- original version; created by h2xs 1.21 with options
+		-n HTML::Lint -X -A
+	- adapted entirely from Neil Bowers' Weblint package	
+	- Neil's change history is in the file Changes-Neil

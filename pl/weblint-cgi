@@ -1,0 +1,179 @@
+#!/usr/local/bin/perl -w
+#
+# weblint - syntax and style checker for HTML
+#
+
+use strict;
+use lib '/home/neilb/weblint/lib';
+use vars qw($VERSION);
+use Weblint;
+use Weblint::Constants;
+
+use Env qw(SCRIPT_NAME REQUEST_TYPE);
+use CGI;
+use LWP::Simple;
+
+   $VERSION = sprintf("%d.%02d", q$Revision: 1.1 $ =~ /(\d+)\.(\d+)/);
+my $weblint;
+my $cgi = CGI->new();
+my $url = $cgi->param('url') || 'http://';
+my $content;
+
+my %entity =
+(
+	'<' => 'lt',
+	'>' => 'gt',
+	'"' => 'quot',
+);
+
+
+$| = 1;
+generate_header();
+if ($url ne 'http://')
+{
+	print "<TABLE border=0><tr bgcolor=\"#a7a7ff\">\n";
+	print "<td>URL: <b>$url</b></td></tr>\n";
+	$content = get($url);
+	$weblint = Weblint->new();
+	$weblint->messages->set_message_handler(\&msg_handler);
+	print "<tr bgcolor=\"#a7ffa7\"><td><PRE>\n";
+	$weblint->check_string('', $content);
+	print "</PRE></td></tr>\n";
+	print "</table>\n";
+}
+else
+{
+	print "<P>Enter a URL and hit return!</p>\n";
+}
+generate_footer();
+
+exit 0;
+
+#========================================================================
+#
+# msg_handler
+#
+#========================================================================
+sub msg_handler
+{
+	my $filename = shift;
+	my $line	 = shift;
+	my $id		 = shift;
+	my $message  = shift;
+	my @argv	 = @_;
+
+
+	$message =~ s/([<>])/\&$entity{$1};/g;
+	print "line $line: $message\n";
+}
+
+
+#========================================================================
+#
+# generate_header
+#
+#========================================================================
+sub generate_header
+{
+	print <<EOF_HEADER;
+Content-Type: text/html
+
+<HTML>
+	<HEAD>
+	<TITLE>CGI Gateway to Weblint</TITLE>
+	<STYLE>
+		BLOCKQUOTE { background: yellow }
+	</STYLE>
+	</HEAD>
+
+	<BODY BGCOLOR="#ffffff" TEXT="#000000" LINK=blue VLINK=purple ALINK=red>
+	<CENTER><A HREF="http://www.weblint.org/"><IMG SRC="/images/weblint.gif" WIDTH=245 HEIGHT=66 BORDER=0
+		ALT=weblint></A></CENTER>
+
+	<P align=center><CENTER><NOBR>
+	<FORM ACTION="$SCRIPT_NAME" METHOD=GET>
+	<B>URL:</B>
+	<INPUT NAME=url TYPE=TEXT SIZE=64 VALUE="$url">
+	<INPUT NAME=submit TYPE=SUBMIT VALUE=" Submit ">
+	</FORM>
+	</NOBR></CENTER></p>
+EOF_HEADER
+}
+
+
+#========================================================================
+#
+# generate_footer
+#
+#========================================================================
+sub generate_footer
+{
+	print <<EOF_FOOTER;
+	<p>
+	<HR>
+	<p align=center><i>weblint-cgi v$VERSION,
+	using Weblint.pm v$Weblint::VERSION</i></p>
+	</BODY>
+</HTML>
+EOF_FOOTER
+}
+
+
+
+__END__
+
+=head1 NAME
+
+weblint-cgi - web based (CGI) interface to weblint
+
+=head1 SYNOPSIS
+
+	weblint-cgi
+
+
+=head1 DESCRIPTION
+
+B<weblint-cgi> is a Perl script which provides a CGI gateway to weblint.
+
+
+=head1 SEE ALSO
+
+=over 4
+
+=item Weblint home page
+
+http://www.weblint.org/
+
+=item Weblint.pm
+
+The weblint module. The weblint script is pretty much just a wrapper
+around this module, which handling of command-line arguments and
+config files.
+
+=back
+
+=head1 VERSION
+
+$Revision: 1.1 $
+
+=head1 AVAILABILITY
+
+The latest version of weblint is always available from the
+weblint home page:
+
+	http://www.weblint.org/
+
+It's also available from our ftp site:
+
+	ftp://ftp.weblint.org/pub/weblint/
+
+=head1 KNOWN BUGS
+
+Since weblint 2 is still under development there are bound to be plenty.
+Please check the weblint home page for the latest list.
+
+=head1 AUTHOR
+
+Neil Bowers
+neilb@weblint.org
+

@@ -1,0 +1,584 @@
+#!/usr/local/bin/perl -w
+#
+# weblint - syntax and style checker for HTML
+#
+
+use strict;
+use HTML::Lint;
+use HTML::Lint::Constants;
+
+use Getopt::Long;
+use File::Find;
+use IO::File;
+
+use vars qw($VERSION $PROGRAM);
+$PROGRAM = 'weblint';
+$VERSION = '2.0.0';
+
+my $SITE_DIR	= '';
+my $USER_RCFILE = $ENV{'WEBLINTRC'} || "$ENV{'HOME'}/.weblintrc";
+my $SITE_RCFILE = $SITE_DIR.'/global.weblintrc' if $SITE_DIR;
+
+my $weblint;
+my $exit_status;
+my %switch;
+my @dir_indices;
+my %ignore = (
+	'SYMLINKS' => 0,
+	);
+
+#------------------------------------------------------------------------
+# $versionString - the string which is displayed with -version
+#------------------------------------------------------------------------
+my $versionString=<<EofVersion;
+	This is weblint, version $VERSION
+
+	Copyright 1994-1999 Neil Bowers
+
+	Weblint may be used and copied only under the terms of the Artistic
+	License, which may be found in the Weblint source kit, or at:
+	http://www.weblint.org/artistic.html
+EofVersion
+
+
+my $ver = $HTML::Lint::VERSION;
+#------------------------------------------------------------------------
+# $usageString - usage string displayed with the -help switch
+#------------------------------------------------------------------------
+my $usageString=<<EofUsage;
+$PROGRAM v$VERSION (using HTML::Lint v$HTML::Lint::VERSION) - pick fluff off web pages (HTML)
+	-d	 : disable specified messages (messages separated by commas)
+	-e	 : enable specified messages (messages separated by commas)
+	-f	 : does something, but I'm not sure what
+	-i       : does something, but I'm not sure what
+	-l       : does something, but I'm not sure what
+	-pedantic : turn on all messages, except for case of element tags
+	-s	 : give short messages (filename not printed)
+	-t	 : terse message mode, useful mainly for automated processing
+	-help 	 : display this usage message
+	-version : display version
+	-messages : list supported messages (warnings, errors, etc.)
+
+  To check one or more HTML files, run weblint thusly:
+	  weblint file1.html [... fileN.html]
+EofUsage
+
+my %variable = (
+	'directory-index' => 'index.html',
+	'file-extensions' => 'html, htm, shtml',
+	'url-get'	=> '',
+	'message-style'	=> 'lint',
+	);
+
+$exit_status = 0;
+
+$weblint = new HTML::Lint;
+
+die "$usageString" unless @ARGV > 0;
+
+if (-f $USER_RCFILE) {
+	read_config_file($USER_RCFILE);
+} elsif (defined $SITE_RCFILE && -f $SITE_RCFILE) {
+	read_config_file($SITE_RCFILE);
+}
+process_command_line();
+exit $exit_status;
+
+#=======================================================================
+#
+# process_command_line
+#
+#=======================================================================
+sub process_command_line
+{
+	my @options = ('d=s', 'e=s', 'f=s', 'stderr', 'help', 'i', 'l', 's', 't',
+		   'noglobals', 'pedantic', 'v', 'version', 'messages',
+		   'x=s');
+	my $argc;
+	my $arg;
+
+
+	&GetOptions(\%switch, @options)
+		|| die "use -help switch to display usage statement\n";
+
+	die "$versionString\n"	if $switch{v} || $switch{version};
+	die "$usageString"	if $switch{help};
+
+	$weblint->message_format(MF_SHORT)		if $switch{'s'};
+	$weblint->message_format(MF_TERSE)		if $switch{'t'};
+	$ignore{SYMLINKS} = 1					if $switch{'l'};
+
+	# pedantic command-line switch turns on all messages except case checking
+	$weblint->pedantic() if $switch{pedantic};
+
+	$weblint->messages->output_handle(\*STDERR) if $switch{'stderr'};
+	$weblint->messages->list_messages(\*STDERR) if $switch{'messages'};
+
+	#-------------------------------------------------------------------
+	# -d to disable messages
+	#-------------------------------------------------------------------
+	if ($switch{d})
+	{
+	for (split(/,/,$switch{d}))
+	{
+		$weblint->enable($_, DISABLED);
+	}
+	}
+
+	#-------------------------------------------------------------------
+	# -e to enable messages
+	#-------------------------------------------------------------------
+	if ($switch{e})
+	{
+	for (split(/,/,$switch{e}))
+	{
+		$weblint->enable($_, ENABLED) || next;
+	}
+	}
+
+	$variable{'file-extensions'} =~ s!\s*,\s*!|!g;
+
+	$argc = int(@ARGV);
+	while (@ARGV > 0)
+	{
+	   $arg = shift(@ARGV);
+
+	#-------------------------------------------------------------------
+	# recurse in directories, checking all files found in there
+	#-------------------------------------------------------------------
+	if (-d $arg)
+	{
+		@dir_indices = split(/\s*,\s*/, $variable{'directory-index'});
+		find(\&wanted, $arg);
+		next;
+	}
+
+	#-------------------------------------------------------------------
+	# recurse in directories, checking all files found in there
+	#-------------------------------------------------------------------
+	$weblint->check_file($arg), next if (-f $arg && -r $arg) || $arg eq '-';
+
+	   print "$PROGRAM: could not read $arg: $!\n";
+	}
+
+}
+
+#========================================================================
+#
+# wanted
+#
+# This is called by &find() to determine whether a file is wanted.
+# We're looking for files, with the filename extension .html or .htm.
+#
+#========================================================================
+sub wanted
+{
+	my $found_index;
+
+
+	if (-d $_)
+	{
+	$found_index = 0;
+	foreach my $legal_index (@dir_indices)
+	{
+		if (-f "$_/$legal_index")
+		{
+		$found_index=1;
+		last;
+		}
+	}
+	if (! $found_index)
+	{
+		$weblint->whine('directory-index',
+				"$File::Find::dir/$_", "@dir_indices");
+	}
+	}
+
+   /\.($variable{'file-extensions'})$/o &&		# valid filename extensions
+	  -f $_ &&					# only looking for files
+	  (!$ignore{SYMLINKS} || !-l $_) && 	# ignore symlinks if -l given
+	  $weblint->check_file($_, "$File::Find::dir/$_");		# check the file
+}
+
+
+#========================================================================
+#
+# read_config_file
+#
+#
+# Read the specified configuration file. This is used to read the user's
+# .weblintrc file, or the global system config file, if the user doesn't
+# have one.
+#
+#========================================================================
+sub read_config_file
+{
+	my $filename = shift;
+
+	my $CONFIG;
+	my $arglist;
+	my($keyword, $value);
+	local $_;
+
+
+	print STDERR "reading config file $filename\n";
+	$CONFIG = new IO::File("< $filename");
+	if (not defined $CONFIG)
+	{
+	$weblint->whine('bad-config-file', $filename, $!);
+	return;
+	}
+
+	while (<$CONFIG>)
+	{
+	chop;
+	s/#.*$//;
+	next if /^\s*$/o;
+
+	#-- match keyword: process one or more argument -------------------
+	if (/^\s*(enable|disable|extension|ignore)\s+(.*)$/io)
+	{
+		$keyword = "\U$1";
+		$arglist = $2;
+		while ($arglist =~ /^\s*(\S+)/o)
+		{
+		$value = "\L$1";
+
+		$weblint->enable($1, ENABLED) if $keyword eq 'ENABLE';
+		$weblint->enable($1, DISABLED) if $keyword eq 'DISABLE';
+		$ignore{"\U$1"} = 1 if $keyword eq 'IGNORE';
+
+		# &AddExtension("\L$1") if $keyword eq 'EXTENSION';
+		if ($keyword eq 'EXTENSION')
+		{
+			print STDERR "No extensions supported at the moment\n";
+		}
+
+		$arglist = $';
+		}
+	}
+	elsif (/^\s*set\s+(\S+)\s*=\s*(.*)/o)
+	{
+		# setting a weblint variable
+		if (defined $variable{$1})
+		{
+		$variable{$1} = $2;
+		}
+		else
+		{
+		$weblint->whine('unknown-config-var', $1, $filename);
+		}
+	}
+	elsif (/^\s*use\s*global\s*weblintrc/o)
+	{
+		if (-f $SITE_RCFILE)
+		{
+		&read_config_file($SITE_RCFILE);
+		}
+		else
+		{
+		$weblint->whine('bad-config-file', $SITE_RCFILE, $!);
+		next;
+		}
+	}
+	else
+	{
+		$weblint->whine('unknown-config-cmd', $_, $filename);
+	}
+	}
+
+	$CONFIG->close();
+}
+
+__END__
+
+=head1 NAME
+
+weblint - pick fluff off web pages (HTML)
+
+=head1 SYNOPSIS
+
+	weblint [ -d id ] [ -e id ] [ -l ] [ -s | -t ] [ -stderr ]
+			[ -help ] [ -version ] file1 ... fileN
+
+=head1 DESCRIPTION
+
+B<weblint> is a Perl script which picks fluff off HTML pages.
+
+Files to be checked are passed on the command-line:
+
+	% weblint foobar.html ./dodgy-files/ index.html
+
+If any of the arguments are directories weblint will recurse
+in the directory, and check any HTML files found.
+
+Warnings are generated a la lint:
+
+	home.html(9): unmatched </A> (no matching <A> seen).
+
+Weblint includes the following features:
+
+=over 4
+
+=item *
+
+Support for HTML 4.0 (current HTML standard)
+
+=item *
+
+Over 50 different checks and warnings
+
+=item *
+
+Messages can be enabled/disabled individually, as per your preference.
+Can also enabled/disabled all messages of a given class (warning, error, etc.)
+
+=item *
+
+Basic structure and syntax checks
+
+=item *
+
+Warnings for use of unknown elements and element attributes.
+
+=item *
+
+Context checks (where a tag must appear within a certain element).
+
+=item *
+
+overlapped or illegally nested elements.
+
+=item *
+
+do IMG elements have ALT text?
+
+=item *
+
+flags obsolete elements.
+
+=item *
+
+support for user and site configuration files
+
+=item *
+
+stylistic checks
+
+=back
+
+=head1 OPTIONS
+
+=over 4
+
+=item -d I<message-identifier>
+
+Disable the message associated with the identifier.
+Multiple identifiers can be specified,
+with a comma between identifiers.
+
+=item -e I<message-identifier>
+
+Enable the message associated with the identifier.
+Multiple identifiers can be specified,
+with a comma between identifiers.
+
+=item -f I<config-file>
+
+Specify a weblint configuration file which should be used in place
+of the user's default config file, or the site configuration file.
+
+=item -help
+
+Show a short usage summary.
+
+=item -i
+
+Ignore case of element tags.
+
+=item -l
+
+When recursing in directories,
+ignore any files which are symlinks (also known as soft links).
+This will also cause files on the command-line to be ignored if they
+are symlinks, unless only one file is given.
+
+=item -pedantic
+
+Turn on all messages except the case-sensitive and bad-link message.
+
+=item -s
+
+Generate `short' messages, which do not include the filename.
+
+=item -stderr
+
+Print messages to STDERR rather than STDOUT.
+
+=item -t
+
+Enable terse message mode,
+which is mainly useful for the weblint testsuite.
+
+=item -version
+
+Display the version number.
+
+=item -messages
+
+List all supported messages, with message identifier,
+and whether the message is enabled.
+
+=back
+
+=head1 CONFIGURATION FILE
+
+B<Weblint> can be configured using a file I<.weblintrc>
+in your home directory (or a file referenced by the WEBLINTRC
+environment variable).
+This file can be used to enable or disable specific messages,
+set weblint variables, and include HTML extensions,
+as described above.
+Each message has a short identifier string, used to refer to
+the message in config files, and from the command-line.
+For example, if you want to enable the check for tags in upper-case,
+but disable the check for obsolete elements,
+then you would include the following lines in your .weblintrc:
+
+	# the style of message to generate (lint, short, or terse)
+	set message-style = lint
+	
+	# enable message for tags not in upper-case
+	enable upper-case
+	
+	# disable the message for obsolete tags
+	disable obsolete
+
+The keywords can be followed by any number of arguments,
+separated by spaces or tabs.
+Anything following a `#' is treated as a comment.
+
+A sample configuration file is included in the weblint distribution
+(as of version 1.004),
+which mirrors the configuration built-in to weblint.
+
+Weblint also supports a site configuration file.
+If a user does not have a personal configuration file,
+then weblint will check for a local site configuration file.
+To provide such a file,
+create a directory such as /usr/local/weblint,
+and create a file global.weblintrc.
+You need to edit the weblint script and modify the $SITE_DIR variable,
+which you will find near the top of the file.
+For example:
+
+	$SITE_DIR = '/usr/local/weblint';
+
+At some point in the future there will be configuration support for
+weblint, so you won't have to modify the script directly yourself.
+
+If you have a site configuration file,
+then users can inherit the site defaults by adding the following line
+at the top of their .weblintrc file:
+
+
+	use global weblintrc
+
+=head1 WARNINGS AND OTHER MESSAGES
+
+A full list of the messages supported by weblint can be found
+in the documentation for the Weblint::Messages module,
+or on the weblint web page (see below).
+
+You can get a list of the messages supported by weblint with the
+C<-messages> switch:
+
+	% weblint -messages
+
+=head1 TESTSUITE
+
+A simple regression testsuite is included with weblint,
+in the B<t> directory. When you install weblint, you should
+run the testsuite, and expect to get no errors:
+
+	% perl Makefile.PL
+	% make test
+
+All tests should pass.
+If any tests fail, please email details to the address given
+in the AUTHOR section below.
+
+=head1 ENVIRONMENT VARIABLES
+
+=over 4
+
+=item WEBLINTRC
+
+If this variable is defined, and references a file,
+then B<weblint> will read the referenced file for the user's configuration,
+rather than $HOME/.weblintrc.
+
+=back
+
+=head1 FILES
+
+=over 4
+
+=item $HOME/.weblintrc
+
+The user's configuration file.	See the section `CONFIGURATION FILE'.
+
+=item global.weblintrc
+
+A system-wide global configuration file. This isn't installed
+by default, but it may be installed locally.
+
+=back
+
+=head1 SEE ALSO
+
+=over 4
+
+=item Weblint home page
+
+http://www.weblint.org/
+
+=item Weblint.pm
+
+The weblint module. The weblint script is pretty much just a wrapper
+around this module, which handling of command-line arguments and
+config files.
+
+=back
+
+=head1 VERSION
+
+$Revision: 1.5 $
+
+=head1 AVAILABILITY
+
+The latest version of weblint is always available from the
+weblint home page:
+
+	http://www.weblint.org/
+
+It's also available from our ftp site:
+
+	ftp://ftp.weblint.org/pub/weblint/
+
+=head1 KNOWN BUGS
+
+Since weblint 2 is still under development there are bound to be plenty.
+Please check the weblint home page for the latest list.
+
+=head1 AUTHOR
+
+Neil Bowers
+neilb@weblint.org
+
+=head1 CONTRIBUTIONS
+
+Lots of people have contributed to weblint,
+in the form of suggestions, bug reports, fixes, and contributed code.
+These people are now listed on the weblint home page.
+
