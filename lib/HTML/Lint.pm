@@ -51,13 +51,13 @@ use vars qw( @ISA $VERSION );
 
 =head1 VERSION
 
-Version 1.20
+Version 1.21
 
-    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.41 2002/08/22 21:57:55 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/HTML/Lint.pm,v 1.46 2002/10/10 05:33:27 petdance Exp $
 
 =cut
 
-$VERSION = '1.20';
+$VERSION = '1.21';
 
 =head1 EXPORTS
 
@@ -81,9 +81,11 @@ sub new {
     my $self  = 
         HTML::Parser->new(
 	    api_version => 3,
-	    start_h     => [ \&_start,	'self,tagname,line,column,@attr' ],
-	    end_h       => [ \&_end,	'self,tagname,line,column,@attr' ],
-	    text_h      => [ \&_text,	'self,text' ],
+	    start_document_h	=> [ \&_start_document,	'self' ],
+	    end_document_h	=> [ \&_end_document,   'self,line,column' ],
+	    start_h		=> [ \&_start,		'self,tagname,line,column,@attr' ],
+	    end_h		=> [ \&_end,		'self,tagname,line,column,@attr' ],
+	    text_h		=> [ \&_text,		'self,text' ],
 	    strict_names => 1,
 	    );
 
@@ -115,9 +117,10 @@ sub only_types {
 
 =head2 C<errors()>
 
-In list context, C<errors> returns all of the errors found in 
-the parsed text.  In scalar context, it returns the number of
-errors found.
+In list context, C<errors> returns all of the errors found in the
+parsed text.  Each error is an object of the type L<HTML::Lint::Error>.
+
+In scalar context, it returns the number of errors found.
 
 =cut
 
@@ -160,6 +163,7 @@ sub gripe {
 
 Call C<newfile()> whenever you switch to another file in a batch of 
 linting.  Otherwise, the object thinks everything is from the same file.
+Note that the list of errors is NOT cleared.
 
 =cut
 
@@ -170,6 +174,7 @@ sub newfile($) {
     $self->{_file} = $file;
     $self->line(0);
     $self->column(0);
+    $self->{_first_seen} = {};
 
     return $self->{_file};
 } # newfile
@@ -189,6 +194,27 @@ sub column($) {
     my $self = shift;
     $self->{_column} = shift if @_;
     return $self->{_column};
+}
+
+=pod
+
+Here's all the internal functions that nobody needs to know about
+
+=cut
+
+sub _start_document {
+    my $self = shift;
+}
+
+
+sub _end_document {
+    my ($self,$line,$column) = @_;
+
+    for my $tag ( keys %isRequired ) {
+	if ( !$self->{_first_seen}->{$tag} ) {
+	    $self->gripe( 'doc-tag-required', tag => $tag );
+	}
+    }
 }
 
 sub _start {
@@ -214,6 +240,17 @@ sub _start {
 	$self->gripe( 'elem-unknown', tag => $tag );
     }
     $self->_element_push( $tag ) unless $HTML::Tagset::emptyElement{ $tag };
+
+    if ( my $where = $self->{_first_seen}{$tag} ) {
+	if ( $isNonrepeatable{$tag} ) {
+	    $self->gripe( 'elem-nonrepeatable', 
+			    tag => $tag, 
+			    where => HTML::Lint::Error::where(@$where)
+			);
+	}
+    } else {
+	$self->{_first_seen}{$tag} = [$line,$column];
+    }
 
     # Call any other overloaded func
     my $tagfunc = "_start_$tag";

@@ -1,4 +1,4 @@
-# $Id: Error.pm,v 1.19 2002/08/22 21:57:57 petdance Exp $
+# $Id: Error.pm,v 1.21 2002/10/10 05:25:58 petdance Exp $
 package HTML::Lint::Error;
 
 use strict;
@@ -233,6 +233,9 @@ Andy Lester, E<lt>andy@petdance.comE<gt>
 
     'elem-img-sizes-missing' =>	['<IMG> tag has no HEIGHT and WIDTH attributes.', HELPER],
     'elem-img-alt-missing' =>   ['<IMG> does not have ALT text defined', HELPER],
+    'elem-nonrepeatable' =>	['<${tag}> is not repeatable, but already appeared at ${where}', STRUCTURE],
+
+    'doc-tag-required' =>	['<${tag}> tag is required', STRUCTURE],
 
     'attr-repeated' =>		['${attr} attribute in <${tag}> is repeated', STRUCTURE],
     'attr-unknown' =>		['Unknown attribute "${attr}" for tag <${tag}>', FLUFF],
@@ -246,7 +249,6 @@ __DATA__
 Errors that haven't been done yet.
 
 #elem-head-only			<${tag}> can only appear in the <HEAD> element
-#elem-nonrepeatable 		Element <${tag}> is non-repeatable, but already showed up at line ${n}
 #elem-non-head-element 		<${tag}> cannot appear in the <HEAD> element
 #elem-obsolete 			<${tag}> is obsolete
 #elem-nested-element 		<${tag}> cannot be nested -- one is already opened at ${where}

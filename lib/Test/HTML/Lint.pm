@@ -6,7 +6,7 @@ eval 'use warnings' if $] >= 5.006;
 use Test::Builder;
 use Exporter;
 
-use HTML::Lint 1.20;
+use HTML::Lint 1.21;
 
 use vars qw( @ISA $VERSION @EXPORT );
 
@@ -14,13 +14,13 @@ use vars qw( @ISA $VERSION @EXPORT );
 
 =head1 VERSION
 
-Version 1.12
+Version 1.21
 
-    $Header: /cvsroot/html-lint/html-lint/lib/Test/HTML/Lint.pm,v 1.14 2002/08/22 21:57:57 petdance Exp $
+    $Header: /cvsroot/html-lint/html-lint/lib/Test/HTML/Lint.pm,v 1.16 2002/10/10 05:33:27 petdance Exp $
 
 =cut
 
-$VERSION = '1.20';
+$VERSION = '1.21';
 
 my $Tester = Test::Builder->new;
 
@@ -81,8 +81,15 @@ sub html_ok {
 	$Tester->ok( 0, $name );
     } else {
 	$lint->parse( $html );
-	$ok = $Tester->is_num( scalar $lint->errors, 0, $name );
-	$Tester->diag( $_->as_string ) for $lint->errors;
+	my $nerr = scalar $lint->errors;
+	$ok = !$nerr;
+        $Tester->ok( $ok, $name );
+	if ( !$ok ) {
+	    my $msg = "Errors:";
+	    $msg .= " $name" if $name;
+	    $Tester->diag( $msg );
+	    $Tester->diag( $_->as_string ) for $lint->errors;
+	}
     }
 
     return $ok;

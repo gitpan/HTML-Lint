@@ -1,4 +1,4 @@
-# $Id: HTML4.pm,v 1.8 2002/08/22 21:57:57 petdance Exp $
+# $Id: HTML4.pm,v 1.10 2002/10/10 05:04:41 petdance Exp $
 package HTML::Lint::HTML4;
 
 use strict;
@@ -25,8 +25,8 @@ sub hash(@) { my %hash; $hash{$_} = 1 for @_; return \%hash; }
 @events	= qw( onclick ondblclick onkeydown onkeypress onkeyup onmousedown onmousemove onmouseout onmouseover onmouseup );
 @std	= (@core,@i18n,@events);
 
-%isRequired = %{hash( qw( body head title ) )};
-%isNonrepeatable = %isRequired;
+%isRequired = %{hash( qw( html body head title ) )};
+%isNonrepeatable = %{hash( qw( html head base title body isindex ))};
 %isObsolete	= %{hash( qw( listing plaintext xmp ) )};
 
 # Some day I might do something with these.  For now, they're just comments.
@@ -38,7 +38,7 @@ sub ns_only { return @_ };
     (map { $_=>hash(@std) } (@physical, @content) ),
 
     a		=> hash( @std, qw( accesskey charset coords href hreflang name onblur onfocus rel rev shape tabindex target type ) ),
-    addresss	=> hash( @std ),
+    address	=> hash( @std ),
     applet	=> hash( @std ),
     area	=> hash( @std, qw( accesskey alt coords href nohref onblur onfocus shape tabindex target ) ),
     base	=> hash( qw( href target ) ),

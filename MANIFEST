@@ -1,4 +1,4 @@
-# $Id: MANIFEST,v 1.8 2002/08/08 02:19:43 petdance Exp $
+# $Id: MANIFEST,v 1.9 2002/10/10 05:33:17 petdance Exp $
 MANIFEST
 README
 Changes
@@ -15,11 +15,13 @@ t/02.versions.t
 t/10.test-html-lint.t
 t/attr-repeated.t
 t/attr-unknown.t
+t/doc-tag-required.t
 t/elem-empty-but-closed.t
 t/elem-img-alt-missing.t
 t/elem-img-sizes-missing.t
 t/elem-input-image-sizes-missing.t
 t/elem-input-not-sizable.t
+t/elem-nonrepeatable.t
 t/elem-unclosed.t
 t/elem-unknown.t
 t/elem-unopened.t

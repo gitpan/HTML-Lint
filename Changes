@@ -1,5 +1,18 @@
-# $Id: Changes,v 1.30 2002/08/22 15:49:39 petdance Exp $
+# $Id: Changes,v 1.37 2002/10/10 05:33:27 petdance Exp $
 Revision history for Perl extension HTML::Lint.
+
+1.21	October 9, 2002
+	[ENHANCEMENTS]
+	* Added a test file for pod files
+	* html_ok() now diag()s the test name before spewing the errors.
+	* Made some docs a little more explicit. (Thanks to Ron Savage)
+	* Added the check for missing <HTML>, <HEAD>, <TITLE> and <BODY>.
+	* Added the check for nonrepeatable tags.
+
+	[FIXES]
+	* Ticket #1493: typo in HTML::Lint::HTML4 
+	  <ADDRESS> element in HTML4.pm was <ADDRESSS>.  Thanks to Dominic
+	  Mitchell for finding it.
 
 1.20	August 22, 2002
 	[ENHANCEMENTS]
