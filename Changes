@@ -1,5 +1,9 @@
 Revision history for Perl extension HTML::Lint.
 
+0.91	January 8, 2002
+	* Fixed: Content description tags (<CITE>, <EM>, etc) were
+	not seen as being valid tags.
+
 0.90	July 8, 2001
 	First version of the rewrite as a subclass of HTML::Parser
 

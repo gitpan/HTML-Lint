@@ -10,7 +10,7 @@ our @EXPORT = qw( %isKnownAttribute %isRequired %isNonrepeatable %isObsolete );
 sub hash(@) { my %hash; $hash{$_} = 1 for @_; return \%hash; }
 
 our @physical	= qw( b big code i kbd s small strike sub sup tt u xmp );
-our @phrase	= qw( abbr acronym cite code dfn em kbd samp strong var );
+our @content	= qw( abbr acronym cite code dfn em kbd samp strong var );
 
 our @core	= qw( class id style title );
 our @i18n	= qw( dir lang );
@@ -27,7 +27,7 @@ sub ns_only { return @_ };
 
 our %isKnownAttribute = (
     # All the physical markup has the same
-    (map { $_=>hash(@std) } @physical),
+    (map { $_=>hash(@std) } (@physical, @content) ),
 
     a		=> hash( @std, qw( accesskey charset coords href hreflang name onblur onfocus rel rev shape tabindex target type ) ),
     addresss	=> hash( @std ),
