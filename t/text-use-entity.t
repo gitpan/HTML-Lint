@@ -1,10 +1,11 @@
+use warnings;
 use strict;
 require 't/LintTest.pl';
 
 checkit( [
     [ 'text-use-entity'	=> qr/Invalid character \\x0B should be written as &#11;/i ],
     [ 'text-use-entity'	=> qr/Invalid character \\xF1 should be written as &ntilde;/i ],
-], <DATA> );
+], [<DATA>] );
     
 __DATA__
 <HTML>

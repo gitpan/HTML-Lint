@@ -1,4 +1,7 @@
-# $Id: 30.test-builder.t,v 1.1 2003/09/02 22:16:23 petdance Exp $
+#!perl -Tw
+
+use warnings;
+use strict;
 
 # The test is not that html_ok() works, but that the tests=>1 gets
 # acts as it should.

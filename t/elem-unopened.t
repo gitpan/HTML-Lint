@@ -1,12 +1,13 @@
+use warnings;
 use strict;
 require 't/LintTest.pl';
 
 checkit( [
     [ 'elem-unopened' => qr/<\/p> with no opening <P>/i ],
-], <DATA> );
-    
+], [<DATA>] );
+
 __DATA__
-<HTML>
+<HTML> <!-- for elem-unopened -->
     <HEAD>
 	<TITLE>Test stuff</TITLE>
     </HEAD>

@@ -6,12 +6,11 @@ HTML::Lint - check for HTML errors in a string or file
 
 =head1 VERSION
 
-Version 1.30
+Version 2.00
 
 =cut
 
-use vars '$VERSION';
-$VERSION = '1.30';
+our $VERSION = '2.00';
 
 =head1 SYNOPSIS
 
@@ -48,26 +47,12 @@ Apache F<error_log>.
 =cut
 
 use strict;
-
-use HTML::Parser 3.20;
-use HTML::Tagset 3.03;
 use HTML::Lint::Error;
-use HTML::Lint::HTML4 qw( %isKnownAttribute %isRequired %isNonrepeatable %isObsolete );
-use HTML::Entities qw( %char2entity );
-
-use vars qw( @ISA );
-
-@ISA = qw( HTML::Parser );
-
-=head1 EXPORTS
-
-None.  It's all object-based.
 
 =head1 METHODS
 
-C<HTML::Lint> is based on the L<HTML::Parser> module.  Any method call that works with 
-C<HTML::Parser> will work in C<HTML::Lint>.  However, you'll probably only want to use
-the C<parse()> or C<parse_file()> methods.
+NOTE: Some of these methods mirror L<HTML::Parser>'s methods, but HTML::Lint
+is not a subclass of HTML::Parser.
 
 =head2 new()
 
@@ -80,7 +65,7 @@ C<only_types> parm.
 If you want more than one, you must pass an arrayref:
 
     my $lint = HTML::Lint->new( 
-	only_types => [HTML::Lint::Error::STRUCTURE, HTML::Lint::Error::FLUFF] );
+        only_types => [HTML::Lint::Error::STRUCTURE, HTML::Lint::Error::FLUFF] );
 
 =cut
 
@@ -88,27 +73,16 @@ sub new {
     my $class = shift;
     my %args = @_;
 
-    my $self  = 
-        HTML::Parser->new(
-	    api_version => 3,
-	    start_document_h	=> [ \&_start_document,	'self' ],
-	    end_document_h	=> [ \&_end_document,   'self,line,column' ],
-	    start_h		=> [ \&_start,		'self,tagname,line,column,@attr' ],
-	    end_h		=> [ \&_end,		'self,tagname,line,column,@attr' ],
-	    text_h		=> [ \&_text,		'self,text' ],
-	    strict_names => 1,
-	    );
-
+    my $self = {
+        _errors => [],
+        _types => [],
+    };
+    $self->{_parser} = HTML::Lint::Parser->new( sub { $self->gripe( @_ ) } );
     bless $self, $class;
 
-    $self->{_errors} = [];
-    $self->{_stack} = [];
-    $self->{_first_occurrence} = {};
-    $self->{_types} = [];
-
     if ( my $only = $args{only_types} ) {
-	$self->only_types( ref $only eq "ARRAY" ? @$only : $only );
-	delete $args{only_types};
+        $self->only_types( ref $only eq "ARRAY" ? @$only : $only );
+        delete $args{only_types};
     }
 
     warn "Unknown argument $_\n" for keys %args;
@@ -116,7 +90,90 @@ sub new {
     return $self;
 }
 
-=head2 only_types( $type1[, $type2...] )
+=head2 $lint->parse( $chunk )
+
+=head2 $lint->parse( $code_ref )
+
+Passes in a chunk of HTML to be linted, either as a piece of text,
+or a code reference.
+See L<HTML::Parser>'s C<parse_file> method for details.
+
+=cut
+
+sub parse {
+    my $self = shift;
+    return $self->_parser->parse( @_ );
+}
+
+=head2 $lint->parse_file( $file )
+
+Analyzes HTML directly from a file. The C<$file> argument can be a filename,
+an open file handle, or a reference to an open file handle.
+See L<HTML::Parser>'s C<parse_file> method for details.
+
+=cut
+
+sub parse_file {
+    my $self = shift;
+    return $self->_parser->parse_file( @_ );
+}
+
+=head2 $lint->eof
+
+Signals the end of a block of text getting passed in.  This must be
+called to make sure that all parsing is complete before looking at errors.
+
+Any parameters (and there shouldn't be any) are passed through to
+HTML::Parser's eof() method.
+
+=cut
+
+sub eof {
+    my $self = shift;
+
+    my $rc;
+    my $parser = $self->_parser;
+    if ( $parser ) {
+        $rc = $self->_parser->eof(@_);
+        delete $self->{_parser};
+    }
+
+    return $rc;
+}
+
+=head2 $lint->errors()
+
+In list context, C<errors> returns all of the errors found in the
+parsed text.  Each error is an object of the type L<HTML::Lint::Error>.
+
+In scalar context, it returns the number of errors found.
+
+=cut
+
+sub errors {
+    my $self = shift;
+
+    if ( wantarray ) {
+        return @{$self->{_errors}};
+    }
+    else {
+        return scalar @{$self->{_errors}};
+    }
+}
+
+=head2 $lint->clear_errors()
+
+Clears the list of errors, in case you want to print and clear, print and clear.
+
+=cut
+
+sub clear_errors {
+    my $self = shift;
+
+    $self->{_errors} = [];
+}
+
+=head2 $lint->only_types( $type1[, $type2...] )
 
 Specifies to only want errors of a certain type.
 
@@ -136,38 +193,7 @@ sub only_types {
     $self->{_types} = [@_];
 }
 
-=head2 errors()
-
-In list context, C<errors> returns all of the errors found in the
-parsed text.  Each error is an object of the type L<HTML::Lint::Error>.
-
-In scalar context, it returns the number of errors found.
-
-=cut
-
-sub errors {
-    my $self = shift;
-
-    if ( wantarray ) {
-	return @{$self->{_errors}};
-    } else {
-	return scalar @{$self->{_errors}};
-    }
-}
-
-=head2 clear_errors()
-
-Clears the list of errors, in case you want to print and clear, print and clear.
-
-=cut
-
-sub clear_errors {
-    my $self = shift;
-
-    $self->{_errors} = [];
-}
-
-=head2 gripe( $errcode, [$key1=>$val1, ...] )
+=head2 $lint->gripe( $errcode, [$key1=>$val1, ...] )
 
 Adds an error message, in the form of an L<HTML::Lint::Error> object,
 to the list of error messages for the current object.  The file,
@@ -186,20 +212,25 @@ in case, here you go.
 sub gripe {
     my $self = shift;
 
-    my $err = new HTML::Lint::Error( 
-    	$self->file, $self->line, $self->column, @_ );
+    my $parser = $self->_parser;
+
+    my $error = new HTML::Lint::Error(
+        $self->{_file}, $parser->{_line}, $parser->{_column}, @_ );
 
     my @keeps = @{$self->{_types}};
-    if ( !@keeps || $err->is_type(@keeps) ) {
-	push( @{$self->{_errors}}, $err );
+    if ( !@keeps || $error->is_type(@keeps) ) {
+        push( @{$self->{_errors}}, $error );
     }
 }
 
-=head2 newfile( $filename )
+=head2 $lint->newfile( $filename )
 
 Call C<newfile()> whenever you switch to another file in a batch of 
 linting.  Otherwise, the object thinks everything is from the same file.
 Note that the list of errors is NOT cleared.
+
+Note that I<$filename> does NOT need to match what's put into parse()
+or parse_file().  It can be a description, a URL, or whatever.
 
 =cut
 
@@ -207,6 +238,8 @@ sub newfile {
     my $self = shift;
     my $file = shift;
 
+    delete $self->{_parser};
+    $self->{_parser} = HTML::Lint::Parser->new( sub { $self->gripe( @_ ) } );
     $self->{_file} = $file;
     $self->{_line} = 0;
     $self->{_column} = 0;
@@ -215,54 +248,67 @@ sub newfile {
     return $self->{_file};
 } # newfile
 
-=head2 file()
+sub _parser {
+    my $self = shift;
 
-Returns the current file being linted.
-
-=cut
-
-sub file {
-    return shift->{_file};
-}
-
-=head2 line()
-
-Returns the current line in the file.
-
-=cut
-
-sub line {
-    return shift->{_line};
-}
-
-=head2 column()
-
-Returns the current column in the file.
-
-=cut
-
-sub column {
-    return shift->{_column};
+    return $self->{_parser};
 }
 
 =pod
 
-Here are all the internal functions that nobody needs to know about
+HTML::Lint::Parser is a class only for this module.
 
 =cut
+
+package HTML::Lint::Parser;
+
+use HTML::Parser 3.20;
+use HTML::Tagset 3.03;
+
+use HTML::Lint::HTML4 qw( %isKnownAttribute %isRequired %isNonrepeatable %isObsolete );
+use HTML::Entities qw( %char2entity );
+
+our @ISA = qw( HTML::Parser );
+
+sub new {
+    my $class = shift;
+    my $gripe = shift;
+
+    my $self =
+        HTML::Parser->new(
+            api_version => 3,
+            start_document_h    => [ \&_start_document, 'self' ],
+            end_document_h      => [ \&_end_document,   'self,line,column' ],
+            start_h             => [ \&_start,          'self,tagname,line,column,@attr' ],
+            end_h               => [ \&_end,            'self,tagname,line,column,@attr' ],
+            text_h              => [ \&_text,           'self,text' ],
+            strict_names => 1,
+        );
+    bless $self, $class;
+
+    $self->{_gripe} = $gripe;
+    $self->{_stack} = [];
+
+    return $self;
+}
+
+sub gripe {
+    my $self = shift;
+
+    return $self->{_gripe}->( @_ );
+}
 
 sub _start_document {
     my $self = shift;
 }
 
-
 sub _end_document {
     my ($self,$line,$column) = @_;
 
     for my $tag ( keys %isRequired ) {
-	if ( !$self->{_first_seen}->{$tag} ) {
-	    $self->gripe( 'doc-tag-required', tag => $tag );
-	}
+        if ( !$self->{_first_seen}->{$tag} ) {
+            $self->gripe( 'doc-tag-required', tag => $tag );
+        }
     }
 }
 
@@ -274,38 +320,40 @@ sub _start {
 
     my $validattr = $isKnownAttribute{ $tag };
     if ( $validattr ) {
-	my %seen;
-	my $i = 0;
-	while ( $i < @attr ) {
-	    my ($attr,$val) = @attr[$i++,$i++];
-	    if ( $seen{$attr}++ ) {
-		$self->gripe( 'attr-repeated', tag => $tag, attr => $attr );
-	    }
+        my %seen;
+        my $i = 0;
+        while ( $i < @attr ) {
+            my ($attr,$val) = @attr[$i++,$i++];
+            if ( $seen{$attr}++ ) {
+                $self->gripe( 'attr-repeated', tag => $tag, attr => $attr );
+            }
 
-	    if ( $validattr && ( !$validattr->{$attr} ) ) {
-		$self->gripe( 'attr-unknown', tag => $tag, attr => $attr );
-	    }
-	} # while attribs
-    } else {
-	$self->gripe( 'elem-unknown', tag => $tag );
+            if ( $validattr && ( !$validattr->{$attr} ) ) {
+                $self->gripe( 'attr-unknown', tag => $tag, attr => $attr );
+            }
+        } # while attribs
+    }
+    else {
+        $self->gripe( 'elem-unknown', tag => $tag );
     }
     $self->_element_push( $tag ) unless $HTML::Tagset::emptyElement{ $tag };
 
     if ( my $where = $self->{_first_seen}{$tag} ) {
-	if ( $isNonrepeatable{$tag} ) {
-	    $self->gripe( 'elem-nonrepeatable', 
-			    tag => $tag, 
-			    where => HTML::Lint::Error::where(@$where)
-			);
-	}
-    } else {
-	$self->{_first_seen}{$tag} = [$line,$column];
+        if ( $isNonrepeatable{$tag} ) {
+            $self->gripe( 'elem-nonrepeatable',
+                            tag => $tag,
+                            where => HTML::Lint::Error::where(@$where)
+                        );
+        }
+    }
+    else {
+        $self->{_first_seen}{$tag} = [$line,$column];
     }
 
     # Call any other overloaded func
     my $tagfunc = "_start_$tag";
     if ( $self->can($tagfunc) ) {
-       $self->$tagfunc( $tag, @attr );
+        $self->$tagfunc( $tag, @attr );
     }
 }
 
@@ -313,12 +361,12 @@ sub _text {
     my ($self,$text) = @_;
 
     while ( $text =~ /([^\x09\x0A\x0D -~])/g ) {
-	my $bad = $1;
-	$self->gripe(
-	    'text-use-entity', 
-		char => sprintf( '\x%02lX', ord($bad) ),
-		entity => $char2entity{ $bad },
-	);
+        my $bad = $1;
+        $self->gripe(
+            'text-use-entity', 
+                char => sprintf( '\x%02lX', ord($bad) ),
+                entity => $char2entity{ $bad },
+        );
     }
 }
 
@@ -329,32 +377,34 @@ sub _end {
     $self->{_column} = $column;
 
     if ( $HTML::Tagset::emptyElement{ $tag } ) {
-	$self->gripe( 'elem-empty-but-closed', tag => $tag );
-    } else {
-	if ( $self->_in_context($tag) ) {
-	    my @leftovers = $self->_element_pop_back_to($tag);
-	    for ( @leftovers ) {
-		my ($tag,$line,$col) = @$_;
-		$self->gripe( 'elem-unclosed', tag => $tag, 
-			where => HTML::Lint::Error::where($line,$col) )
-		    	unless $HTML::Tagset::optionalEndTag{$tag};
-	    } # for
-	} else {
-	    $self->gripe( 'elem-unopened', tag => $tag );
-	}
+        $self->gripe( 'elem-empty-but-closed', tag => $tag );
+    }
+    else {
+        if ( $self->_in_context($tag) ) {
+            my @leftovers = $self->_element_pop_back_to($tag);
+            for ( @leftovers ) {
+                my ($tag,$line,$col) = @$_;
+                $self->gripe( 'elem-unclosed', tag => $tag, 
+                        where => HTML::Lint::Error::where($line,$col) )
+                        unless $HTML::Tagset::optionalEndTag{$tag};
+            } # for
+        }
+        else {
+            $self->gripe( 'elem-unopened', tag => $tag );
+        }
     } # is empty element
-    
+
     # Call any other overloaded func
     my $tagfunc = "_end_$tag";
     if ( $self->can($tagfunc) ) {
-	$self->$tagfunc( $tag, $line );
+        $self->$tagfunc( $tag, $line );
     }
 }
 
-sub _element_push { 
-    my $self = shift; 
+sub _element_push {
+    my $self = shift;
     for ( @_ ) {
-	push( @{$self->{_stack}}, [$_,$self->line,$self->column] ); 
+        push( @{$self->{_stack}}, [$_,$self->{_line},$self->{_column}] );
     } # while
 }
 
@@ -365,20 +415,19 @@ sub _find_tag_in_stack {
 
     my $offset = @$stack - 1;
     while ( $offset >= 0 ) {
-	if ( $stack->[$offset][0] eq $tag ) {
-	    return $offset;
-	} # if
-	--$offset;
+        if ( $stack->[$offset][0] eq $tag ) {
+            return $offset;
+        }
+        --$offset;
     } # while
 
     return;
-
 }
 
 sub _element_pop_back_to {
     my $self = shift;
     my $tag = shift;
-    
+
     my $offset = $self->_find_tag_in_stack($tag) or return;
 
     my @leftovers = splice( @{$self->{_stack}}, $offset + 1 );
@@ -401,12 +450,13 @@ sub _start_img {
 
     my ($h,$w) = @attr{qw( height width )};
     if ( defined $h && defined $w ) {
-	# Check sizes
-    } else {
-	$self->gripe( "elem-img-sizes-missing" );
+        # Check sizes
+    }
+    else {
+        $self->gripe( "elem-img-sizes-missing" );
     }
     if ( not defined $attr{alt} ) {
-	$self->gripe( "elem-img-alt-missing" );
+        $self->gripe( "elem-img-alt-missing" );
     }
 }
 
@@ -416,7 +466,7 @@ Please feel free to email me at andy@petdance.com.  I'm glad to help as
 best I can, and I'm always interested in bugs, suggestions and patches.
 
 Please report any bugs or feature requests to
-C<< <bug-html-lint@rt.cpan.org> >>, or through the web interface at
+C<< <bug-html-lint at rt.cpan.org> >>, or through the web interface at
 L<http://rt.cpan.org>.  I will be notified, and then you'll automatically
 be notified of progress on your bug as I make changes.
 
@@ -425,15 +475,6 @@ be notified of progress on your bug as I make changes.
 =over 4
 
 =item * Check for attributes that require values
-
-For instance, BGCOLOR should be BGCOLOR="something", but if it's just BGCOLOR, 
-that's a problem.  (Plus, that crashes IE OSX)
-
-=item * Add link checking
-
-=item * Handle obsolete tags
-
-=item * Anything like <BR> or <P> inside of <A>
 
 =item * <TABLE>s that have no rows.
 
@@ -453,7 +494,7 @@ that's a problem.  (Plus, that crashes IE OSX)
 
 =head1 LICENSE
 
-Copyright 2003 Andy Lester, All Rights Reserved.
+Copyright 2005 Andy Lester, All Rights Reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -463,7 +504,7 @@ employers of the various contributors to the code.
 
 =head1 AUTHOR
 
-Andy Lester, E<lt>andy@petdance.comE<gt>
+Andy Lester, andy at petdance.com
 
 =cut
 

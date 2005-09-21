@@ -1,3 +1,8 @@
+#!perl -Tw
+
+use warnings;
+use strict;
+
 use Test::More tests => 4;
 
 BEGIN { use_ok( 'HTML::Lint' ); }

@@ -1,9 +1,10 @@
+use warnings;
 use strict;
 require 't/LintTest.pl';
 
 checkit( [
     [ 'elem-img-sizes-missing' => qr/<IMG> tag has no HEIGHT and WIDTH attributes./i ],
-], <DATA> );
+], [<DATA>] );
     
 __DATA__
 <HTML>

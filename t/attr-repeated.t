@@ -1,9 +1,10 @@
 use strict;
+use warnings;
 require 't/LintTest.pl';
 
 checkit( [
     [ 'attr-repeated' => qr/ALIGN attribute in <P> is repeated/i ],
-], <DATA> );
+], [<DATA>] );
     
 __DATA__
 <HTML>

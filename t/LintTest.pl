@@ -3,14 +3,20 @@ use HTML::Lint;
 
 sub checkit {
     my @expected = @{+shift};
-    my @lines = @_;
+    my @linesets = @_;
 
     plan( tests => 3*(scalar @expected) + 4 );
 
     my $lint = new HTML::Lint;
     isa_ok( $lint, 'HTML::Lint', 'Created lint object' );
-    $lint->parse( $_ ) for @_;
-    $lint->eof;
+
+    my $n;
+    for my $set ( @linesets ) {
+        ++$n;
+        $lint->newfile( "Set #$n" );
+        $lint->parse( $_ ) for @$set;
+        $lint->eof;
+    }
 
     my @errors = $lint->errors();
     is( scalar @errors, scalar @expected, 'Right # of errors' );
@@ -21,12 +27,13 @@ sub checkit {
 
         my $expected = shift @expected;
 
-        is( $error->errcode, $expected->[0] );
+        is( $error->errcode, $expected->[0], 'Error codes match' );
         my $match = $expected->[1];
         if ( ref $match eq "Regexp" ) {
-            like( $error->as_string, $match );
-        } else {
-            is( $error->as_string, $match );
+            like( $error->as_string, $match, 'Error matches regex' );
+        }
+        else {
+            is( $error->as_string, $match, 'Error matches string' );
         }
     }
 
@@ -39,6 +46,22 @@ sub checkit {
         diag( "Leftover errors..." ); 
         diag( $_->as_string ) for @errors;
     }
+}
+
+# Read in a set of sets of lines, where each "file" is separated by a
+# blank line in <DATA>
+sub get_paragraphed_files {
+    local $/ = "";
+
+    my @sets;
+
+    while ( my $paragraph = <DATA> ) {
+        my @lines = split /\n/, $paragraph;
+        @lines = map { "$_\n" } @lines;
+        push( @sets, [@lines] );
+    }
+
+    return @sets;
 }
 
 1; # happy

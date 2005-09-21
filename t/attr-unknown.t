@@ -1,10 +1,11 @@
+use warnings;
 use strict;
 require 't/LintTest.pl';
 
 checkit( [
     [ 'attr-unknown' => qr/Unknown attribute "FOOD" for tag <P>/i ],
     [ 'attr-unknown' => qr/Unknown attribute "Yummy" for tag <I>/i ],
-], <DATA> );
+], [<DATA>] );
     
 __DATA__
 <HTML>

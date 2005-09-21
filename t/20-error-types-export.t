@@ -1,4 +1,7 @@
-# $Id: 20.error-types-export.t,v 1.1 2003/09/02 19:20:24 petdance Exp $
+#!perl -Tw
+
+use warnings;
+use strict;
 
 use Test::More tests => 5;
 

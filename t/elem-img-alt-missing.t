@@ -1,9 +1,10 @@
+use warnings;
 use strict;
 require 't/LintTest.pl';
 
 checkit( [
     [ 'elem-img-alt-missing' => qr/<IMG> does not have ALT text defined/i ],
-], <DATA> );
+], [<DATA>] );
     
 __DATA__
 <HTML>

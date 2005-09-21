@@ -1,11 +1,13 @@
+use warnings;
 use strict;
 require 't/LintTest.pl';
 
 checkit( [
     [ 'doc-tag-required' => qr/<html> tag is required/ ],
-], <DATA> );
-    
+], [<DATA>] );
+
 __DATA__
+<!-- doc-tag-required -->
     <HEAD>
 	<TITLE>Test stuff</TITLE>
     </HEAD>

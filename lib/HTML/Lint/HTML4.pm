@@ -1,38 +1,30 @@
-# $Id: HTML4.pm,v 1.15 2004/01/27 23:15:16 petdance Exp $
 package HTML::Lint::HTML4;
 
 use strict;
 
 use base 'Exporter';
-
-use vars qw(
-    @EXPORT_OK 
-    @physical @content @core @i18n @events @std
-    %isRequired %isNonrepeatable %isObsolete
-    %isKnownAttribute
-);
-
-@EXPORT_OK = qw( %isKnownAttribute %isRequired %isNonrepeatable %isObsolete );
+our @EXPORT_OK = qw( %isKnownAttribute %isRequired %isNonrepeatable %isObsolete );
 
 sub _hash(@) { my %hash; $hash{$_} = 1 for @_; return \%hash; }
 
-@physical       = qw( b big code i kbd s small strike sub sup tt u xmp );
-@content        = qw( abbr acronym cite code dfn em kbd samp strong var );
+our @physical   = qw( b big code i kbd s small strike sub sup tt u xmp );
+our @content    = qw( abbr acronym cite code dfn em kbd samp strong var );
 
-@core   = qw( class id style title );
-@i18n   = qw( dir lang );
-@events = qw( onclick ondblclick onkeydown onkeypress onkeyup onmousedown onmousemove onmouseout onmouseover onmouseup );
-@std    = (@core,@i18n,@events);
+our @core   = qw( class id style title );
+our @i18n   = qw( dir lang );
+our @events = qw( onclick ondblclick onkeydown onkeypress onkeyup
+                    onmousedown onmousemove onmouseout onmouseover onmouseup );
+our @std    = (@core,@i18n,@events);
 
-%isRequired = %{_hash( qw( html body head title ) )};
-%isNonrepeatable = %{_hash( qw( html head base title body isindex ))};
-%isObsolete     = %{_hash( qw( listing plaintext xmp ) )};
+our %isRequired = %{_hash( qw( html body head title ) )};
+our %isNonrepeatable = %{_hash( qw( html head base title body isindex ))};
+our %isObsolete     = %{_hash( qw( listing plaintext xmp ) )};
 
 # Some day I might do something with these.  For now, they're just comments.
 sub _ie_only { return @_ };
 sub _ns_only { return @_ };
 
-%isKnownAttribute = (
+our %isKnownAttribute = (
     # All the physical markup has the same
     (map { $_=>_hash(@std) } (@physical, @content) ),
 
@@ -44,7 +36,7 @@ sub _ns_only { return @_ };
     basefont    => _hash( qw( color face id size ) ),
     bdo         => _hash( @core, @i18n ),
     blockquote  => _hash( @std, qw( cite ) ),
-    body        => _hash( @std, 
+    body        => _hash( @std,
                     qw( alink background bgcolor link marginheight marginwidth onload onunload text vlink ),
                     _ie_only( qw( bgproperties leftmargin topmargin ) )
                     ),
@@ -93,8 +85,8 @@ sub _ns_only { return @_ };
     menu        => _hash( @std, qw( compact ) ),
     meta        => _hash( @i18n, qw( content http-equiv name scheme ) ),
     nobr        => _hash( @std ),
-    noframes    => _hash( @std ), 
-    noscript    => _hash( @std ), 
+    noframes    => _hash( @std ),
+    noscript    => _hash( @std ),
     object      => _hash( @std, qw( align archive border classid codebase codetype data declare height hspace name standby tabindex type usemap vspace width )),
     ol          => _hash( @std, qw( compact start type ) ),
     optgroup    => _hash( @std, qw( disabled label ) ),
@@ -109,25 +101,25 @@ sub _ns_only { return @_ };
     span        => _hash( @std ),
     strong      => _hash(),
     style       => _hash( @i18n, qw( media title type ) ),
-    table       => _hash( @std, 
+    table       => _hash( @std,
                     qw( align bgcolor border cellpadding cellspacing datapagesize frame rules summary width ),
                     _ie_only( qw( background bordercolor bordercolordark bordercolorlight ) ),
                     _ns_only( qw( bordercolor cols height hspace vspace ) ),
                     ),
     tbody       => _hash( @std, qw( align char charoff valign ) ),
-    td          => _hash( @std, 
+    td          => _hash( @std,
                     qw( abbr align axis bgcolor char charoff colspan headers height nowrap rowspan scope valign width ),
                     _ie_only( qw( background bordercolor bordercolordark bordercolorlight ) ),
                     ),
     textarea    => _hash( @std, qw( accesskey cols disabled name onblur onchange onfocus onselect readonly rows tabindex ) ),
-    th          => _hash( @std, 
+    th          => _hash( @std,
                     qw( abbr align axis bgcolor char charoff colspan headers height nowrap rowspan scope valign width ),
                     _ie_only( qw( background bordercolor bordercolordark bordercolorlight ) ),
                     ),
     thead       => _hash( @std, qw( align char charoff valign ) ),
     tfoot       => _hash( @std, qw( align char charoff valign ) ),
     title       => _hash( @i18n ),
-    tr          => _hash( @std, 
+    tr          => _hash( @std,
                     qw( align bgcolor char charoff valign ),
                     _ie_only( qw( bordercolor bordercolordark bordercolorlight nowrap ) ),
                     _ns_only( qw( nowrap ) ),
@@ -135,7 +127,7 @@ sub _ns_only { return @_ };
     ul          => _hash( @std, qw( compact type ) ),
 );
 
-=for oldobsoletestuffthatIwanttokeep 
+=for oldobsoletestuffthatIwanttokeep
 my %booger = (
     'maybePaired'  => 'LI DT DD P TD TH TR OPTION COLGROUP THEAD TFOOT TBODY COL',
 
@@ -273,11 +265,11 @@ No user serviceable parts inside.  Used by HTML::Lint.
 
 =head1 AUTHOR
 
-Andy Lester E<lt>andy@petdance.comE<gt>
+Andy Lester C<andy at petdance.com>
 
 =head1 COPYRIGHT
 
-Copyright (c) Andy Lester 2001. All Rights Reserved.
+Copyright (c) Andy Lester 2005. All Rights Reserved.
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.

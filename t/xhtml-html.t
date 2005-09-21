@@ -1,8 +1,9 @@
+use warnings;
 use strict;
 require 't/LintTest.pl';
 
 checkit( [
-], <DATA> );
+], [<DATA>] );
 
 __DATA__
 <HTML xmlns="Ding dang doodle" xml:lang="en" lang="en">

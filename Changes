@@ -1,6 +1,23 @@
-# $Id: Changes,v 1.55 2004/01/27 23:15:34 petdance Exp $
-Revision history for Perl extension HTML::Lint and Test::HTML::Lint.
+Revision history HTML::Lint and Test::HTML::Lint.
 
+2.00    Tue Sep 20 23:10:39 CDT 2005
+        [CHANGES THAT COULD BREAK YOUR CODE]
+        * I've changed the object structure.  HTML::Lint now has-a
+          HTML::Parser, and no longer is-a HTML::Parser.
+
+        * weblint-cgi and weblint-original are no longer distributed
+          with HTML::Lint.
+
+        * Now requires Perl 5.6.0.
+
+        [FIXES]
+        * Line numbering is now correct if you parse more than one file.
+
+        * Changed t/*.*.t so that they only had one period in the
+          filename. Apparently VMS doesn't like filenames with multiple
+          dots.
+
+1.30    December 3, 2004
         [ENHANCEMENTS]
         * Added handling for <HTML xmlns=... xml:lang=...>
 

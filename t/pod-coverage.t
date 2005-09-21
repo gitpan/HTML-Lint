@@ -1,4 +1,6 @@
 #!perl -Tw
+use warnings;
+use strict;
 
 use Test::More;
 eval "use Test::Pod::Coverage 1.04";

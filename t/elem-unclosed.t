@@ -1,14 +1,15 @@
+use warnings;
 use strict;
 require 't/LintTest.pl';
 
 checkit( [
-    [ 'elem-unclosed' => qr/<b> at \(6:5\) is never closed/i ],
-    [ 'elem-unclosed' => qr/<i> at \(7:5\) is never closed/i ],
-], <DATA> );
+    [ 'elem-unclosed' => qr/\Q<b> at (6:5) is never closed/i ],
+    [ 'elem-unclosed' => qr/\Q<i> at (7:5) is never closed/i ],
+], [<DATA>] );
     
 __DATA__
 <HTML>
-    <HEAD>
+    <HEAD> <!-- Checking for elem-unclosed -->
 	<TITLE>Test stuff</TITLE>
     </HEAD>
     <BODY BGCOLOR="white">

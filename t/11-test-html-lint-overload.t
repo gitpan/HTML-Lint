@@ -1,4 +1,7 @@
-# $Id: 11.test-html-lint-overload.t,v 1.3 2003/09/02 19:15:15 petdance Exp $
+#!perl -Tw
+
+use strict;
+use warnings;
 
 use Test::More tests => 4;
 

@@ -1,8 +1,9 @@
+use warnings;
 use strict;
 require 't/LintTest.pl';
 
 checkit( [
-], <DATA> );
+], [<DATA>] );
 
 __DATA__
 <?php show_parallel_page() ?>

@@ -1,10 +1,11 @@
+use warnings;
 use strict;
 require 't/LintTest.pl';
 
 checkit( [
     [ 'elem-unknown' => qr/unknown element <donky>/i ],
     [ 'elem-unclosed' => qr/<donky> at \(\d+:\d+\) is never closed/i ],
-], <DATA> );
+], [<DATA>] );
     
 __DATA__
 <HTML>

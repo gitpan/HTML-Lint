@@ -1,6 +1,7 @@
-# $Id: 20.error-types-skip.t,v 1.6 2003/09/02 19:20:24 petdance Exp $
+#!perl -Tw
 
 use strict;
+use warnings;
 use Test::More tests => 10;
 
 BEGIN { use_ok( 'HTML::Lint' ); }
@@ -24,8 +25,9 @@ FUNC_METHOD: {
     $lint->clear_errors();
     $lint->only_types( STRUCTURE );
     $lint->parse( $text );
-    if ( !is( scalar $lint->errors, 1, 'One error if we specify STRUCTURE if we turn it off' ) ) {
-	diag( $_->as_string ) for $lint->errors;
+    my @errors = $lint->errors;
+    if ( !is( scalar @errors, 1, 'One error if we specify STRUCTURE if we turn it off' ) ) {
+        diag( $_->as_string ) for @errors;
     }
 }
 
@@ -34,8 +36,9 @@ CONSTRUCTOR_METHOD_SCALAR: {
     isa_ok( $lint, 'HTML::Lint' );
 
     $lint->parse( $text );
-    if ( !is( scalar $lint->errors, 1, 'One error if we specify STRUCTURE if we turn it off' ) ) {
-	diag( $_->as_string ) for $lint->errors;
+    my @errors = $lint->errors;
+    if ( !is( scalar @errors, 1, 'One error if we specify STRUCTURE if we turn it off' ) ) {
+        diag( $_->as_string ) for @errors;
     }
 }
 
@@ -51,9 +54,9 @@ CONSTRUCTOR_METHOD_ARRAYREF: {
 __DATA__
 <HTML>
     <HEAD>
-	<TITLE>Test stuff</TITLE>
+        <TITLE>Test stuff</TITLE>
     </HEAD>
     <BODY BGCOLOR="white">
-	<TABLE>This is my paragraph
+        <TABLE>This is my paragraph
     </BODY>
 </HTML>
