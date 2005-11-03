@@ -3,7 +3,7 @@ use strict;
 require 't/LintTest.pl';
 
 checkit( [
-    [ 'elem-img-sizes-missing' => qr/<IMG> tag has no HEIGHT and WIDTH attributes./i ],
+    [ 'elem-img-sizes-missing' => qr/<IMG SRC="randal-thong\.jpg"> tag has no HEIGHT and WIDTH attributes./i ],
 ], [<DATA>] );
     
 __DATA__
@@ -13,6 +13,6 @@ __DATA__
     </HEAD>
     <BODY BGCOLOR="white">
 	<P ALIGN=RIGHT>This is my paragraph</P>
-	<IMG SRC="http://www.petdance.com/random/randal-thong.jpg" BORDER=3 ALT="Randal Schwartz in a thong">
+	<IMG BORDER=3 HSPACE=12 SRC="randal-thong.jpg" ALT="Randal Schwartz in a thong">
     </BODY>
 </HTML>

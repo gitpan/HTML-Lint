@@ -3,7 +3,7 @@ use strict;
 require 't/LintTest.pl';
 
 checkit( [
-    [ 'elem-img-alt-missing' => qr/<IMG> does not have ALT text defined/i ],
+    [ 'elem-img-alt-missing' => qr/<IMG SRC="whizbang\.jpg"> does not have ALT text defined/i ],
 ], [<DATA>] );
     
 __DATA__
@@ -13,6 +13,6 @@ __DATA__
     </HEAD>
     <BODY BGCOLOR="white">
 	<P ALIGN=RIGHT>This is my paragraph</P>
-	<IMG SRC="http://www.petdance.com/random/whizbang.jpg" BORDER=3 HEIGHT=4 WIDTH=921>
+	<IMG SRC="whizbang.jpg" BORDER=3 HEIGHT=4 WIDTH=921>
     </BODY>
 </HTML>

@@ -6,11 +6,11 @@ HTML::Lint - check for HTML errors in a string or file
 
 =head1 VERSION
 
-Version 2.00
+Version 2.02
 
 =cut
 
-our $VERSION = '2.00';
+our $VERSION = '2.02';
 
 =head1 SYNOPSIS
 
@@ -30,8 +30,8 @@ HTML::Lint also comes with a wrapper program called F<weblint> that handles
 linting from the command line:
 
     $ weblint http://www.cnn.com/
-    http://www.cnn.com/ (395:83) <IMG> tag has no HEIGHT and WIDTH attributes.
-    http://www.cnn.com/ (395:83) <IMG> does not have ALT text defined
+    http://www.cnn.com/ (395:83) <IMG SRC="spacer.gif"> tag has no HEIGHT and WIDTH attributes.
+    http://www.cnn.com/ (395:83) <IMG SRC="goofus.gif"> does not have ALT text defined
     http://www.cnn.com/ (396:217) Unknown element <nobr>
     http://www.cnn.com/ (396:241) </nobr> with no opening <nobr>
     http://www.cnn.com/ (842:7) target attribute in <a> is repeated
@@ -448,15 +448,15 @@ sub _in_context {
 sub _start_img {
     my ($self,$tag,%attr) = @_;
 
-    my ($h,$w) = @attr{qw( height width )};
+    my ($h,$w,$src) = @attr{qw( height width src )};
     if ( defined $h && defined $w ) {
         # Check sizes
     }
     else {
-        $self->gripe( "elem-img-sizes-missing" );
+        $self->gripe( "elem-img-sizes-missing", src=>$src );
     }
     if ( not defined $attr{alt} ) {
-        $self->gripe( "elem-img-alt-missing" );
+        $self->gripe( "elem-img-alt-missing", src=>$src );
     }
 }
 
