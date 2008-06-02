@@ -1,11 +1,12 @@
 package Test::HTML::Lint;
 
+use warnings;
 use strict;
 
 use Test::Builder;
 use Exporter;
 
-use HTML::Lint 2.02;
+use HTML::Lint 2.04;
 
 use vars qw( @ISA $VERSION @EXPORT );
 
@@ -17,11 +18,11 @@ Test::HTML::Lint - Test::More-style wrapper around HTML::Lint
 
 =head1 VERSION
 
-Version 2.02
+Version 2.04
 
 =cut
 
-$VERSION = '2.02';
+$VERSION = '2.04';
 
 my $Tester = Test::Builder->new;
 
@@ -57,6 +58,8 @@ sub import {
     $Tester->plan(@_);
 
     $self->export_to_level(1, $self, @EXPORT);
+
+    return;
 }
 
 =head2 html_ok( [$lint, ] $html, $name )
@@ -84,30 +87,32 @@ will clear its errors before using it.
 sub html_ok {
     my $lint;
 
-    if ( ref($_[0]) eq "HTML::Lint" ) {
-	$lint = shift;
-	$lint->newfile();
-	$lint->clear_errors();
-    } else {
-	$lint = HTML::Lint->new;
+    if ( ref($_[0]) eq 'HTML::Lint' ) {
+        $lint = shift;
+        $lint->newfile();
+        $lint->clear_errors();
+    }
+    else {
+        $lint = HTML::Lint->new;
     }
     my $html = shift;
     my $name = shift;
 
     my $ok = defined $html;
     if ( !$ok ) {
-	$Tester->ok( 0, $name );
-    } else {
-	$lint->parse( $html );
-	my $nerr = scalar $lint->errors;
-	$ok = !$nerr;
+        $Tester->ok( 0, $name );
+    }
+    else {
+        $lint->parse( $html );
+        my $nerr = scalar $lint->errors;
+        $ok = !$nerr;
         $Tester->ok( $ok, $name );
-	if ( !$ok ) {
-	    my $msg = "Errors:";
-	    $msg .= " $name" if $name;
-	    $Tester->diag( $msg );
-	    $Tester->diag( $_->as_string ) for $lint->errors;
-	}
+        if ( !$ok ) {
+            my $msg = 'Errors:';
+            $msg .= " $name" if $name;
+            $Tester->diag( $msg );
+            $Tester->diag( $_->as_string ) for $lint->errors;
+        }
     }
 
     return $ok;
@@ -115,10 +120,9 @@ sub html_ok {
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-html-lint@rt.cpan.org>,
-or through the web interface at L<http://rt.cpan.org>.  I will be
-notified, and then you'll automatically be notified of progress on
-your bug as I make changes.
+All bugs and requests are now being handled through the Google
+Code issue tracker at http://code.google.com/p/html-lint/issues/list.
+DO NOT send bug reports to http://rt.cpan.org/
 
 =head1 TO DO
 
@@ -139,7 +143,7 @@ this module is taken.
 
 =head1 LICENSE
 
-Copyright 2003 Andy Lester, All Rights Reserved.
+Copyright 2003-2008 Andy Lester, All Rights Reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
