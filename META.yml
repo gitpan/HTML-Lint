@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                HTML-Lint
-version:             2.04
+version:             2.06
 abstract:            check for HTML errors in a string or file
 license:             perl
 author:              

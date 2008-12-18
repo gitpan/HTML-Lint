@@ -4,6 +4,16 @@ NOTE: All bugs and requests are now being handled through the Google
 Code issue tracker at http://code.google.com/p/html-lint/issues/list.
 DO NOT send bug reports to http://rt.cpan.org/
 
+
+2.06    Thu Dec 18 00:07:54 CST 2008
+        [FIXES]
+        Added attributes to <frameset>.
+
+        <strong> tag didn't allow any attributes.  Now it does.
+
+        Removed the <listing> tag.
+
+
 2.04    Mon Jun  2 11:41:16 CDT 2008
         [FIXES]
         <textarea> now knows about the wrap attribute.
