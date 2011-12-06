@@ -6,7 +6,7 @@ use strict;
 use Test::Builder;
 use Exporter;
 
-use HTML::Lint 2.06;
+use HTML::Lint 2.10;
 
 use vars qw( @ISA $VERSION @EXPORT );
 
@@ -18,11 +18,11 @@ Test::HTML::Lint - Test::More-style wrapper around HTML::Lint
 
 =head1 VERSION
 
-Version 2.06
+Version 2.10
 
 =cut
 
-$VERSION = '2.06';
+$VERSION = '2.10';
 
 my $Tester = Test::Builder->new;
 
@@ -120,9 +120,12 @@ sub html_ok {
 
 =head1 BUGS
 
-All bugs and requests are now being handled through the Google
-Code issue tracker at http://code.google.com/p/html-lint/issues/list.
-DO NOT send bug reports to http://rt.cpan.org/
+All bugs and requests are now being handled through GitHub.
+
+    https://github.com/petdance/html-lint/issues
+
+DO NOT send bug reports to http://rt.cpan.org/ or http://code.google.com/
+
 
 =head1 TO DO
 
@@ -133,7 +136,7 @@ C<html_page_ok()>.
 If you think this module should do something that it doesn't do at the
 moment please let me know.
 
-=head1 ACKNOWLEGEMENTS
+=head1 ACKNOWLEDGEMENTS
 
 Thanks to chromatic and Michael G Schwern for the excellent Test::Builder,
 without which this module wouldn't be possible.
@@ -141,15 +144,18 @@ without which this module wouldn't be possible.
 Thanks to Adrian Howard for writing Test::Exception, from which most of
 this module is taken.
 
-=head1 LICENSE
+=head1 COPYRIGHT & LICENSE
 
-Copyright 2003-2008 Andy Lester, All Rights Reserved.
+Copyright 2005-2011 Andy Lester.
 
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+This program is free software; you can redistribute it and/or modify
+it under the terms of the Artistic License v2.0.
+
+http://www.opensource.org/licenses/Artistic-2.0
 
 Please note that these modules are not products of or supported by the
 employers of the various contributors to the code.
+
 
 =head1 AUTHOR
 

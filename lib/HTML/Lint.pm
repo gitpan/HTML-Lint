@@ -11,16 +11,16 @@ HTML::Lint - check for HTML errors in a string or file
 
 =head1 VERSION
 
-Version 2.06
+Version 2.10
 
 =cut
 
-our $VERSION = '2.06';
+our $VERSION = '2.10';
 
 =head1 SYNOPSIS
 
     my $lint = HTML::Lint->new;
-    $lint->only_types( HTML::Lint::STRUCTURE );
+    $lint->only_types( HTML::Lint::Error::STRUCTURE );
 
     $lint->parse( $data );
     $lint->parse_file( $filename );
@@ -195,6 +195,8 @@ sub only_types {
     my $self = shift;
 
     $self->{_types} = [@_];
+
+    return;
 }
 
 =head2 $lint->gripe( $errcode, [$key1=>$val1, ...] )
@@ -218,13 +220,15 @@ sub gripe {
 
     my $parser = $self->_parser;
 
-    my $error = new HTML::Lint::Error(
+    my $error = HTML::Lint::Error->new(
         $self->{_file}, $parser->{_line}, $parser->{_column}, @_ );
 
     my @keeps = @{$self->{_types}};
     if ( !@keeps || $error->is_type(@keeps) ) {
         push( @{$self->{_errors}}, $error );
     }
+
+    return;
 }
 
 =head2 $lint->newfile( $filename )
@@ -281,12 +285,13 @@ sub new {
     my $self =
         HTML::Parser->new(
             api_version => 3,
-            start_document_h    => [ \&_start_document, 'self' ],
-            end_document_h      => [ \&_end_document,   'self,line,column' ],
-            start_h             => [ \&_start,          'self,tagname,line,column,@attr' ],
-            end_h               => [ \&_end,            'self,tagname,line,column,@attr' ],
-            text_h              => [ \&_text,           'self,text' ],
-            strict_names => 1,
+            start_document_h   => [ \&_start_document, 'self' ],
+            end_document_h     => [ \&_end_document,   'self,line,column' ],
+            start_h            => [ \&_start,          'self,tagname,line,column,@attr' ],
+            end_h              => [ \&_end,            'self,tagname,line,column,tokenpos,@attr' ],
+            text_h             => [ \&_text,           'self,text' ],
+            strict_names       => 0,
+            empty_element_tags => 1,
         );
     bless $self, $class;
 
@@ -380,12 +385,16 @@ sub _text {
 }
 
 sub _end {
-    my ($self,$tag,$line,$column,@attr) = @_;
+    my ($self,$tag,$line,$column,$tokenpos,@attr) = @_;
 
     $self->{_line} = $line;
     $self->{_column} = $column;
 
-    if ( $HTML::Tagset::emptyElement{ $tag } ) {
+    if ( !$tokenpos ) {
+        # This is a dummy end event for something like <img />.
+        # Do nothing.
+    }
+    elsif ( $HTML::Tagset::emptyElement{ $tag } ) {
         $self->gripe( 'elem-empty-but-closed', tag => $tag );
     }
     else {
@@ -477,9 +486,11 @@ sub _start_img {
 
 =head1 BUGS, WISHES AND CORRESPONDENCE
 
-All bugs and requests are now being handled through the Google
-Code issue tracker at http://code.google.com/p/html-lint/issues/list.
-DO NOT send bug reports to http://rt.cpan.org/
+All bugs and requests are now being handled through GitHub.
+
+    https://github.com/petdance/html-lint/issues
+
+DO NOT send bug reports to http://rt.cpan.org/ or http://code.google.com/
 
 =head1 TODO
 
@@ -503,12 +514,14 @@ DO NOT send bug reports to http://rt.cpan.org/
 
 =back
 
-=head1 LICENSE
+=head1 COPYRIGHT & LICENSE
 
-Copyright 2005-2008 Andy Lester, All Rights Reserved.
+Copyright 2005-2011 Andy Lester.
 
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+This program is free software; you can redistribute it and/or modify
+it under the terms of the Artistic License v2.0.
+
+http://www.opensource.org/licenses/Artistic-2.0
 
 Please note that these modules are not products of or supported by the
 employers of the various contributors to the code.
