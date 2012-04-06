@@ -30,4 +30,4 @@ resources:
   homepage: http://search.cpan.org/dist/html-lint
   license: http://www.opensource.org/licenses/artistic-license-2.0.php
   x_Repository: https://github.com/petdance/html-lint
-version: 2.12
+version: 2.20

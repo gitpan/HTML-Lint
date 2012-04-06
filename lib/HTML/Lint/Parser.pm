@@ -15,6 +15,14 @@ use base 'HTML::Parser';
 
 HTML::Lint::Parser - Parser for HTML::Lint.  No user-serviceable parts inside.
 
+=head1 VERSION
+
+Version 2.20
+
+=cut
+
+our $VERSION = '2.20';
+
 =head1 SYNOPSIS
 
 See L<HTML::Lint> for all the gory details.
@@ -27,8 +35,7 @@ Constructor for the main parsing object.  The I<$gripe> argument
 is a coderef to a function that can handle errors from the parser.
 It is only ever (so far) C<HTML::Lint::gripe()>.
 
-=cut=
-
+=cut
 
 sub new {
     my $class = shift;
@@ -89,6 +96,7 @@ sub _displayable {
 }
 
 sub _start_document {
+    return;
 }
 
 sub _end_document {
@@ -226,7 +234,7 @@ sub _comment {
             my ($directive,$value) = split( /\s*:\s*/, $command, 2 );
             _trim($_) for ($directive,$value);
 
-            if ( ($directive ne 'all') && 
+            if ( ($directive ne 'all') &&
                 ( not exists $HTML::Lint::Error::errors{ $directive } ) ) {
                 $self->gripe( 'config-unknown-directive',
                     directive => $directive,
